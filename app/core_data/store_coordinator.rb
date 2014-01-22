@@ -5,7 +5,7 @@ class StoreCoordinator < NSPersistentStoreCoordinator
 
   alias_method :stores, :persistentStores
 
-  def default
+  def add_default_store
     error = Pointer.new(:object)
     addPersistentStoreWithType(NSSQLiteStoreType,
                                configuration: nil,

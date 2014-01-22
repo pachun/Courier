@@ -1,4 +1,6 @@
 describe "CoreData::StoreCoordinator Constructor" do
+  behaves_like "A Core Data Spec"
+
   it "aliases .alloc.initWithManagedObjectModel(schema) to .new(schema)" do
     schema = CoreData::Schema.new
     lambda do
@@ -20,8 +22,8 @@ describe "CoreData::StoreCoordinator Constructor" do
       end.should.not.raise(StandardError)
     end
 
-    it "creates a default.sqlite db when sent .default" do
-      @store_coordinator.default
+    it "creates a default.sqlite db when sent .add_default_store" do
+      @store_coordinator.add_default_store
       @store_coordinator.persistentStores.count.should == 1
     end
   end
