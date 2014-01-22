@@ -29,7 +29,7 @@ describe "CoreData::Context" do
 
   it "creates a .create(entity_type) factory method for generating objects" do
     class Person < NSManagedObject; end
-    person_entity = CoreData::EntityDefinition.new
+    person_entity = CoreData::ModelDefinition.new
     person_entity.name = "Person"
     person_entity.model = Person
 
