@@ -1,4 +1,4 @@
-describe "CoreData::StoreCoordinator Constructor" do
+describe "A Core Data StoreCoordinator Constructor" do
   behaves_like "A Core Data Spec"
 
   it "aliases .alloc.initWithManagedObjectModel(schema) to .new(schema)" do
@@ -9,10 +9,17 @@ describe "CoreData::StoreCoordinator Constructor" do
     end.should.not.raise(StandardError)
   end
 
-  describe "CoreData::StoreCoordinator" do
+  describe "A Core Data StoreCoordinator" do
     before do
       @schema = CoreData::Schema.new
       @store_coordinator = CoreData::StoreCoordinator.new(@schema)
+    end
+
+    it "aliases .managedObjectModel to .schema" do
+      real_schema = @store_coordinator.managedObjectModel
+      lambda do
+        real_schema.equal?(@store_coordinator.schema).should == true
+      end.should.not.raise(StandardError)
     end
 
     it "aliases the '.persistentStores' getter to '.stores'" do

@@ -1,4 +1,4 @@
-describe "CoreData::PropertyDefinition" do
+describe "A Core Data PropertyDefinition" do
   before do
     @property_definition = CoreData::PropertyDefinition.new
   end

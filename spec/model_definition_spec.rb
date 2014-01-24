@@ -1,4 +1,4 @@
-describe "CoreData::ModelDefinition" do
+describe "A Core Data ModelDefinition" do
   before do
     @model_definition = CoreData::ModelDefinition.new
   end

@@ -1,47 +1,37 @@
-shared "A Core Data Spec" do
-  before do
-    app_documents_path = NSFileManager.defaultManager.URLsForDirectory(NSDocumentDirectory, inDomains:NSUserDomainMask).last
-    default_store_url = app_documents_path.URLByAppendingPathComponent("default.sqlite")
-    NSFileManager.defaultManager.removeItemAtPath(default_store_url, error:nil)
-  end
-end
-
-describe "CoreData::Context" do
+describe "A New Core Data Context" do
   behaves_like "A Core Data Spec"
 
-  before do
-    @context = CoreData::Context.new
-  end
-
   it "is a descendant of NSManagedObjectContext" do
-    @context.class.ancestors.should.include(NSManagedObjectContext)
+    context = CoreData::Context.new
+    context.class.ancestors.should.include(NSManagedObjectContext)
   end
 
   it "aliases 'persistentStoreCoordinator' property accessors to 'store_coordinator'" do
+    context = CoreData::Context.new
     schema = CoreData::Schema.new
     intended_store_coordinator = CoreData::StoreCoordinator.new(schema)
     lambda do
-      @context.store_coordinator = intended_store_coordinator
-      real_store_coordinator = @context.persistentStoreCoordinator
-      real_store_coordinator.equal?(@context.store_coordinator).should == true
+      context.store_coordinator = intended_store_coordinator
+      real_store_coordinator = context.persistentStoreCoordinator
+      real_store_coordinator.equal?(context.store_coordinator).should == true
     end.should.not.raise(StandardError)
   end
 
-  it "creates a .create(entity_type) factory method for generating objects" do
-    class Person < NSManagedObject; end
-    person_entity = CoreData::ModelDefinition.new
-    person_entity.name = "Person"
-    person_entity.model = Person
+  describe "A Core Data Context with Models Defined in the Schema" do
+    behaves_like "A Person Model Was Defined"
 
-    @schema = CoreData::Schema.new
-    @schema.entities = [person_entity]
-    @store_coordinator = CoreData::StoreCoordinator.new(@schema)
-    @store_coordinator.add_default_store
+    it "creates a .create(ModelName) factory method for generating objects" do
+      lambda do
+        person = @context.create(Person)
+        person.class.ancestors.should.include(NSManagedObject)
+      end.should.not.raise(StandardError)
+    end
 
-    @context.store_coordinator = @store_coordinator
-    lambda do
+    it "saves models with .save" do
       person = @context.create(Person)
-      person.class.ancestors.should.include(NSManagedObject)
-    end.should.not.raise(StandardError)
+      lambda do
+        @context.save.should == true
+      end.should.not.raise(StandardError)
+    end
   end
 end

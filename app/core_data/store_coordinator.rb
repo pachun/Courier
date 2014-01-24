@@ -4,6 +4,7 @@ class StoreCoordinator < NSPersistentStoreCoordinator
   end
 
   alias_method :stores, :persistentStores
+  alias_method :schema, :managedObjectModel
 
   def add_default_store
     error = Pointer.new(:object)

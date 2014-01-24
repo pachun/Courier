@@ -1,4 +1,4 @@
-describe "CoreData::Schema" do
+describe "A Core Data Schema" do
   before do
     @schema = CoreData::Schema.new
   end
