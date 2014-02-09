@@ -29,7 +29,7 @@ shared "A Person Model Was Defined" do
     @schema = CoreData::Schema.new
     @schema.entities = [@person_model_definition]
     @store_coordinator = CoreData::StoreCoordinator.new(@schema)
-    @store_coordinator.add_default_store
+    @store_coordinator.add_store_named("default")
 
     @context = CoreData::Context.new
     @context.store_coordinator = @store_coordinator

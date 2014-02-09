@@ -29,9 +29,9 @@ describe "A Core Data StoreCoordinator Constructor" do
       end.should.not.raise(StandardError)
     end
 
-    it "creates a default.sqlite db when sent .add_default_store" do
-      @store_coordinator.add_default_store
-      @store_coordinator.persistentStores.count.should == 1
+    it "creates stores with .add_store_named(\"default\")" do
+      @store_coordinator.add_store_named("default")
+      @store_coordinator.stores.count.should == 1
     end
   end
 end

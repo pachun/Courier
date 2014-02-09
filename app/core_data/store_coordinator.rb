@@ -6,11 +6,11 @@ class StoreCoordinator < NSPersistentStoreCoordinator
   alias_method :stores, :persistentStores
   alias_method :schema, :managedObjectModel
 
-  def add_default_store
+  def add_store_named(name)
     error = Pointer.new(:object)
     addPersistentStoreWithType(NSSQLiteStoreType,
                                configuration: nil,
-                               URL: default_store_url,
+                               URL: db_path_for(name + ".sqlite"),
                                options: nil,
                                error: error)
     puts "Couldn't create store: #{error[0].userInfo}" unless error[0].nil?
@@ -18,8 +18,8 @@ class StoreCoordinator < NSPersistentStoreCoordinator
 
   private
 
-  def default_store_url
+  def db_path_for(filename)
     app_documents_path = NSFileManager.defaultManager.URLsForDirectory(NSDocumentDirectory, inDomains:NSUserDomainMask).last
-    app_documents_path.URLByAppendingPathComponent("default.sqlite")
+    app_documents_path.URLByAppendingPathComponent(filename)
   end
 end

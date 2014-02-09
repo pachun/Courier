@@ -2,26 +2,53 @@ describe "A Core Data Relationship Definition" do
   before do
     @relationship = CoreData::RelationshipDefinition.new
   end
+
   it "is a descendant of NSRelationshipDescription" do
     @relationship.class.ancestors.should.include(NSRelationshipDescription)
   end
 
   it "aliases the destinationEntity accessors to destination_model" do
-    model_definition = CoreData::ModelDefinition
+    intended_destination_model = CoreData::ModelDefinition.new
     lambda do
-      @relationship.destination_model = model_definition
-      @relationship.destinationEntity.should == model_definition
-      @relationship.destination_model.should == model_definition
+      @relationship.destination_model = intended_destination_model
+      @relationship.destination_model.equal?(intended_destination_model).should == true
+      @relationship.destinationEntity.equal?(intended_destination_model).should == true
     end.should.not.raise(StandardError)
   end
 
   it "aliases the inverseRelationship accessors to inverse_relationship" do
-    model_definition = CoreData::ModelDefinition
-    inverse_relationship = CoreData::RelationshipDefinition.new
+    inverse_relationship = CoreData::RelationshipDefinition
     lambda do
       @relationship.inverse_relationship = inverse_relationship
-      @relationship.inverseRelationship.should == inverse_relationship
-      @relationship.inverse_relationship.should == inverse_relationship
+      @relationship.inverse_relationship.equal?(inverse_relationship).should == true
+      @relationship.inverseRelationship.equal?(inverse_relationship).should == true
+    end.should.not.raise(StandardError)
+  end
+
+  it "aliases the deleteRule accessors to delete_rule" do
+    delete_rule = CoreData::DeleteRule::Cascade
+    lambda do
+      @relationship.delete_rule = delete_rule
+      @relationship.delete_rule.should == delete_rule
+      @relationship.deleteRule.should == delete_rule
+    end.should.not.raise(StandardError)
+  end
+
+  it "aliases the maxCount accessors to max_count" do
+    max = 5
+    lambda do
+      @relationship.max_count = max
+      @relationship.max_count.should == max
+      @relationship.maxCount.should == max
+    end.should.not.raise(StandardError)
+  end
+
+  it "aliases the minCount accessors to min_count" do
+    min = 2
+    lambda do
+      @relationship.min_count = min
+      @relationship.min_count.should == min
+      @relationship.minCount.should == min
     end.should.not.raise(StandardError)
   end
 end

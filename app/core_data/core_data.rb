@@ -14,4 +14,11 @@ module CoreData
     Transformable = NSTransformableAttributeType
     ID = NSObjectIDAttributeType
   end
+
+  module DeleteRule
+    DoNothing = NSNoActionDeleteRule
+    Nullify = NSNullifyDeleteRule
+    Cascade = NSCascadeDeleteRule
+    Deny = NSDenyDeleteRule
+  end
 end

@@ -19,4 +19,12 @@ describe "The CoreData Module" do
     CoreData::PropertyTypes::Transformable.should == NSTransformableAttributeType
     CoreData::PropertyTypes::ID.should == NSObjectIDAttributeType
   end
+
+  it "aliases all NSDeleteRule's to CoreData::DeleteRule" do
+    defined?(CoreData::DeleteRule).should == "constant"
+    CoreData::DeleteRule::DoNothing.should == NSNoActionDeleteRule
+    CoreData::DeleteRule::Nullify.should == NSNullifyDeleteRule
+    CoreData::DeleteRule::Cascade.should == NSCascadeDeleteRule
+    CoreData::DeleteRule::Deny.should == NSDenyDeleteRule
+  end
 end

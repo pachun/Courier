@@ -14,7 +14,7 @@ describe "A Core Data Model Instance" do
     @person_model.greet.should == "Hello"
   end
 
-  describe "A Core Data Model Class" do
+  describe "The Core Data Model Class" do
     it "can discover it's model definition class given a context" do
       Person.model_definition(@context).should == @person_model_definition
     end
@@ -30,9 +30,6 @@ describe "A Core Data Model Instance" do
         people.should.include(second_person)
         people.should.include(third_person)
       end.should.not.raise(StandardError)
-    end
-
-    it "has a .where(context, :attr => val)" do
     end
   end
 end
