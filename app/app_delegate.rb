@@ -27,7 +27,7 @@ end
 
 class AppDelegate
   def application(_, didFinishLaunchingWithOptions:_)
-    db_stuff
+    # db_stuff
     true
   end
 

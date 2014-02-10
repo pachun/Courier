@@ -3,12 +3,29 @@ module CoreData
     include Packager
     attr_accessor :name, :destination_model, :delete_rule, :max_count, :min_count
 
-    def initialize(relationship_definition)
-      @name = relationship_definition.name
-      @destination_model = relationship_definition.destinationEntity.name.to_s
-      @delete_rule = relationship_definition.deleteRule
-      @max_count = relationship_definition.maxCount
-      @min_count = relationship_definition.minCount
+    # NSCoder needs to be able to call initialize w/o any vars;
+    # it reconstructs the attributes through initWithCoder, and
+    # then calls initialize w/o any vars. *vars is for that
+    # compatability.
+    def initialize(*vars)
+      relationship_definition = vars[0]
+      if relationship_definition
+        @name = relationship_definition.name
+        @destination_model = relationship_definition.destinationEntity.name.to_s
+        @delete_rule = relationship_definition.deleteRule
+        @max_count = relationship_definition.maxCount
+        @min_count = relationship_definition.minCount
+      end
+    end
+
+    def to_definition
+      RelationshipDefinition.new.tap do |d|
+        d.name = @name
+        d.destination_model = @destination_model
+        d.delete_rule = @delete_rule
+        d.max_count = @max_count
+        d.min_count = @min_count
+      end
     end
 
     def describe

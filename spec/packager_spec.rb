@@ -8,6 +8,7 @@ describe "The Packager Module" do
     class Player
       include Packager
       attr_accessor :name, :age, :team
+      def initialize(*vars); end
     end
     @player = Player.new
   end

@@ -26,17 +26,12 @@ module Packager
     app_documents_path.URLByAppendingPathComponent(handle)
   end
 
-  def initialize(*vars)
-    set_random_handle
-    super
-  end
-
   def packager_attributes
     self.class.packager_attributes
   end
 
-  def set_random_handle
-    @packager_handle = (0...32).map{ (65+rand(26)).chr }.join + "_#{self.class.to_s}.data"
+  def random_handle
+    (0...32).map{ (65+rand(26)).chr }.join + "_#{self.class.to_s}.data"
   end
 
   def encodeWithCoder(encoder)
@@ -58,8 +53,8 @@ module Packager
     Packager.URL(@packager_handle)
   end
 
-  def save(custom_handle = @packager_handle)
-    @packager_handle = custom_handle
+  def save(handle = random_handle)
+    @packager_handle = handle
     data = NSKeyedArchiver.archivedDataWithRootObject(self)
     error = Pointer.new(:object)
     written = data.writeToURL(packager_url, options:NSDataWritingAtomic, error:error)

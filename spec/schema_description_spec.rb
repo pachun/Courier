@@ -39,6 +39,9 @@ describe "The Core Data Schema Description Class" do
     @schema = CoreData::Schema.new
     @schema.entities = [@person_model, @toy_model]
     @schema_description = CoreData::SchemaDescription.new(@schema)
+
+    @person_description = CoreData::ModelDescription.new(@person_model)
+    @toy_description = CoreData::ModelDescription.new(@toy_model)
   end
 
   it "persists all model definitions" do
@@ -47,9 +50,20 @@ describe "The Core Data Schema Description Class" do
   end
 
   it "describes itself properly" do
-    person_description = CoreData::ModelDescription.new(@person_model)
-    toy_description = CoreData::ModelDescription.new(@toy_model)
     @schema_description.describe.should == \
-      "\nSchema\n======\n#{toy_description.describe}\n#{person_description.describe}\n"
+      "\nSchema\n======\n#{@toy_description.describe}\n#{@person_description.describe}\n"
+  end
+
+  it "can save and reconstruct itself through NSCoder via Packager" do
+    handle = @schema_description.save
+    rebuilt = CoreData::SchemaDescription.load(handle)
+    rebuilt.model_descriptions.count.should == 2
+    rebuilt.describe.should == \
+      "\nSchema\n======\n#{@toy_description.describe}\n#{@person_description.describe}\n"
+  end
+
+  it "has .to_schema to get back CoreData::Schema" do
+    original_schema = @schema_description.to_schema
+    original_schema.entities.count.should == @schema.entities.count
   end
 end

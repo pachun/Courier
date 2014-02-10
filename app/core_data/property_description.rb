@@ -3,11 +3,27 @@ module CoreData
     include Packager
     attr_accessor :name, :optional, :type, :default_value
 
-    def initialize(property_definition)
-      @name = property_definition.name
-      @optional = property_definition.optional?
-      @type = property_definition.attributeType
-      @default_value = property_definition.defaultValue
+    # NSCoder needs to be able to call initialize w/o any vars;
+    # it reconstructs the attributes through initWithCoder, and
+    # then calls initialize w/o any vars. *vars is for that
+    # compatability.
+    def initialize(*vars)
+      property_definition = vars[0]
+      if property_definition
+        @name = property_definition.name
+        @optional = property_definition.optional?
+        @type = property_definition.attributeType
+        @default_value = property_definition.defaultValue
+      end
+    end
+
+    def to_definition
+      PropertyDefinition.new.tap do |d|
+        d.name = @name
+        d.type = @type
+        d.optional = @optional
+        d.default_value = @default_value
+      end
     end
 
     def describe
