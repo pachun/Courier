@@ -27,7 +27,7 @@ end
 
 class AppDelegate
   def application(_, didFinishLaunchingWithOptions:_)
-    # nscoder_stuff
+    db_stuff
     true
   end
 
@@ -109,12 +109,14 @@ class AppDelegate
     context.save
     puts "saved."
 
-    people = Person.all(context)
-    toys = people.first.toys.allObjects
-    puts "first person's toys: #{toys.map{ |t| t.name }.join(', ')}"
-    puts "all people's toys: #{Toy.all(context).map{ |t| t.name }.join(', ')}"
-  end
+    # people = Person.all(context)
+    # toys = people.first.toys.allObjects
+    # puts "first person's toys: #{toys.map{ |t| t.name }.join(', ')}"
+    # puts "all people's toys: #{Toy.all(context).map{ |t| t.name }.join(', ')}"
 
+    schema_description = CoreData::SchemaDescription.new(schema)
+    puts "#{schema_description.describe}"
+  end
 
   # MIGRATION WORKING HERE:
   def run_migration

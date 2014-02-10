@@ -15,4 +15,13 @@ describe "A Core Data PropertyDefinition" do
       @property_definition.attributeType.should == string_type
     end.should.not.raise(StandardError)
   end
+
+  it "aliases the 'defaultValue' property accessors to 'default_value'" do
+    default_value = 5
+    lambda do
+      @property_definition.default_value = default_value
+      @property_definition.default_value.should == default_value
+      @property_definition.defaultValue.should == default_value
+    end.should.not.raise(StandardError)
+  end
 end

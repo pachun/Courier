@@ -1,12 +1,12 @@
 module CoreData
   class PropertyDefinition < NSAttributeDescription
-    # this works in 'rake spec' but not 'rake'... no idea.
+    # works in 'rake spec' but not 'rake'... no damn idea.
     # alias_method :type=, :setAttributeType
-
-    alias_method :type, :attributeType
-
     def type=(type)
       setAttributeType(type)
     end
+    alias_method :type, :attributeType
+    alias_method :default_value=, :setDefaultValue
+    alias_method :default_value, :defaultValue
   end
 end
