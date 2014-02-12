@@ -1,7 +1,7 @@
 module CoreData
   class RelationshipDescription
     include Packager
-    attr_accessor :name, :destination_model, :delete_rule, :max_count, :min_count
+    attr_accessor :name, :destination_model, :delete_rule, :max_count, :min_count, :inverse_id
 
     # NSCoder needs to be able to call initialize w/o any vars;
     # it reconstructs the attributes through initWithCoder, and
@@ -15,6 +15,7 @@ module CoreData
         @delete_rule = relationship_definition.deleteRule
         @max_count = relationship_definition.maxCount
         @min_count = relationship_definition.minCount
+        @inverse_id = relationship_definition.inverse_id
       end
     end
 
@@ -25,6 +26,7 @@ module CoreData
         d.delete_rule = @delete_rule
         d.max_count = @max_count
         d.min_count = @min_count
+        d.inverse_id = @inverse_id
       end
     end
 

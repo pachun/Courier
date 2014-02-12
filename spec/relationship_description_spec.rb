@@ -6,6 +6,7 @@ describe "The Core Data Relationship Description Class" do
     @delete_rule = CoreData::DeleteRule::Cascade
     @max_count = 0
     @min_count = 0
+    @inverse_id = CoreData::RelationshipDefinition.random_inverse_id
 
     @channels_relationship = CoreData::RelationshipDefinition.new
     @channels_relationship.name = @name
@@ -13,16 +14,18 @@ describe "The Core Data Relationship Description Class" do
     @channels_relationship.delete_rule = @delete_rule
     @channels_relationship.max_count = @max_count
     @channels_relationship.min_count = @min_count
+    @channels_relationship.inverse_id = @inverse_id
 
     @channels_relationship_description = CoreData::RelationshipDescription.new(@channels_relationship)
   end
 
-  it "persists name, destination_model, delete_rule, max_count, and min_count" do
+  it "persists name, destination_model, delete_rule, max_count, min_count, and inverse_id" do
     @channels_relationship_description.name.should == @name
     @channels_relationship_description.destination_model.should == @destination_model.to_s
     @channels_relationship_description.delete_rule.should == @delete_rule
     @channels_relationship_description.min_count.should == @min_count
     @channels_relationship_description.max_count.should == @max_count
+    @channels_relationship_description.inverse_id.should == @inverse_id
   end
 
   it "describes itself properly" do
@@ -40,6 +43,7 @@ describe "The Core Data Relationship Description Class" do
     rebuilt.delete_rule.should == @delete_rule
     rebuilt.min_count.should == @min_count
     rebuilt.max_count.should == @max_count
+    rebuilt.inverse_id.should == @inverse_id
   end
 
   it "has .to_definition to get back the CoreData::RelationshipDefinition" do
@@ -49,5 +53,6 @@ describe "The Core Data Relationship Description Class" do
     definition.delete_rule.should == @channels_relationship.delete_rule
     definition.min_count.should == @channels_relationship.min_count
     definition.max_count.should == @channels_relationship.max_count
+    definition.inverse_id.should == @channels_relationship.inverse_id
   end
 end

@@ -17,12 +17,20 @@ describe "A Core Data Relationship Definition" do
   end
 
   it "aliases the inverseRelationship accessors to inverse_relationship" do
-    inverse_relationship = CoreData::RelationshipDefinition
+    inverse_relationship = CoreData::RelationshipDefinition.new
     lambda do
       @relationship.inverse_relationship = inverse_relationship
       @relationship.inverse_relationship.equal?(inverse_relationship).should == true
       @relationship.inverseRelationship.equal?(inverse_relationship).should == true
     end.should.not.raise(StandardError)
+  end
+
+  it "sets the same @inverse_id on both relationships when an inverse is set" do
+    inverse_relationship = CoreData::RelationshipDefinition.new
+    @relationship.inverse_relationship = inverse_relationship
+    inverse_relationship.inverse_relationship = @relationship
+    @relationship.inverse_id.should.not.be.nil
+    @relationship.inverse_id.should == inverse_relationship.inverse_id
   end
 
   it "aliases the deleteRule accessors to delete_rule" do
