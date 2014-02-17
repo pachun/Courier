@@ -5,36 +5,51 @@ module Courier
       @coredata_definition ||= CoreData::ModelDefinition.new.tap do |m|
         m.name = self.to_s
         m.model = self
-        m.properties = @properties# + @relationships
+        m.properties = relationships + properties
       end
     end
 
-    def self.property(*property)
+    def self.properties
       @properties ||= []
-      @properties << coredata_property_from(property)
     end
 
-#     def self.belongs_to(owner_class, on_delete:delete_action)
-#       @relationships ||= []
-#       @relationships << coredata_belongs_to_with(owner_class, delete_action)
-#     end
-# 
-#     def self.has_many(owned_class, on_delete:delete_action)
-#       @relationships ||= []
-#       @relationships << coredata_has_many_with(owned_class, delete_action)
-#     end
-# 
-#     def self.coredata_has_many_with(owned_class, delete_action)
-# #       CoreData::RelationshipDefinition.new.tap do |r|
-# #         r.name = owned_class.to_s
-# #         r.destination_model = "Fixme later"
-# #         r.min_count = 0
-# #         r.max_count = 0
-# #         r.delete_rule = CoreData::DeleteRule::from_symbol(delete_action)
-# #       end
-#     end
-#     def self.coredata_belongs_to_with(owner_class, delete_action)
-#     end
+    def self.relationships
+      @relationships ||= []
+    end
+
+    def self.property(*property)
+      properties << coredata_property_from(property)
+    end
+
+    # Setting the owner_class and owned_classes as a String for now,
+    # to be constantized! later. Can't do it here, because one class
+    # is always defined at this point, and the other is not yet.
+    #
+    # "constantization" and hemming of inverse relationships will
+    # happen just before a store_coordinator is generated from the
+    # schema (in courier.rb)
+    def self.belongs_to(owner_class, on_delete:delete_action)
+      belongs_to = {min:0, max:1}
+      owner_class = owner_class.to_s.capitalize
+      relationships << coredata_relationship_from(belongs_to, owner_class, delete_action)
+    end
+
+    def self.has_many(owned_class, on_delete:delete_action)
+      has_many = {min:0, max:0}
+      owned_class = owned_class.to_s.singularize.capitalize
+      relationships << coredata_relationship_from(has_many, owned_class, delete_action)
+    end
+
+    def self.coredata_relationship_from(type, related_class, delete_action)
+      CoreData::RelationshipDefinition.new.tap do |r|
+        r.name = related_class.to_s
+        r.local_model = self.to_s
+        r.destination_model = related_class
+        r.min_count = type[:min]
+        r.max_count = type[:max]
+        r.delete_rule = CoreData::DeleteRule::from_symbol(delete_action)
+      end
+    end
 
     def self.coredata_property_from(property)
       CoreData::PropertyDefinition.new.tap do |p|
@@ -50,13 +65,6 @@ module Courier
     def self.all
       super(Courier.instance.contexts[:main])
     end
-
-    # def initialize
-    #   puts "in here!"
-    #   @relationships = []
-    #   @properties = []
-    #   super
-    # end
 
     def save
       Courier.instance.contexts[:main].save

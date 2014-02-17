@@ -45,7 +45,7 @@ module CoreData
     end
 
     def self.delete_string(delete_rule)
-      if delete_rule == DeleteRule::DoNothing
+      if delete_rule == DeleteRule::Nothing
         "do nothing on delete"
       elsif delete_rule == DeleteRule::Nullify
         "nullify on delete"

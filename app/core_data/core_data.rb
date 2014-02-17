@@ -16,9 +16,13 @@ module CoreData
   end
 
   module DeleteRule
-    DoNothing = NSNoActionDeleteRule
+    Nothing = NSNoActionDeleteRule
     Nullify = NSNullifyDeleteRule
     Cascade = NSCascadeDeleteRule
     Deny = NSDenyDeleteRule
+
+    def self.from_symbol(sym)
+      ("CoreData::DeleteRule::" + sym.to_s.capitalize).constantize
+    end
   end
 end

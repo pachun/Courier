@@ -11,7 +11,7 @@ module CoreData
     alias_method :min_count=, :setMinCount
     alias_method :min_count, :minCount
 
-    attr_accessor :inverse_id
+    attr_accessor :local_model, :inverse_id
 
     def inverse_relationship=(inverse_relationship)
       setInverseRelationship(inverse_relationship)

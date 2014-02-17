@@ -5,17 +5,20 @@ describe "The Courier Base Class" do
     if Object.constants.include?(:Keyboard)
       Object.send(:remove_const, :Keyboard)
     end
+    if Object.constants.include?(:Key)
+      Object.send(:remove_const, :Key)
+    end
 
     class Key < Courier::Base
-      # belongs_to :keyboard, on_delete: :nullify
+      belongs_to :keyboard, on_delete: :nullify
     end
 
     class Keyboard < Courier::Base
-      # has_many :keys, on_delete: :cascade
+      has_many :keys, on_delete: :cascade
       property :brand, CoreData::PropertyTypes::String
       property :lbs, CoreData::PropertyTypes::Integer16
     end
-    Courier::Courier.instance.parcels = [Keyboard]
+    Courier::Courier.instance.parcels = [Keyboard, Key]
   end
 
   it "is a descendant of CoreData::Model" do
@@ -27,7 +30,10 @@ describe "The Courier Base Class" do
     coredata_class.class.should == CoreData::ModelDefinition
     coredata_class.name.should == Keyboard.to_s
     coredata_class.model.should == Keyboard.to_s
-    coredata_class.properties.count.should == 2
+    coredata_class.properties.count.should == 3
+    property_types = coredata_class.properties.map{ |p| p.class }
+    property_types.select{ |p| p == CoreData::PropertyDefinition }.count.should == 2
+    property_types.select{ |p| p == CoreData::RelationshipDefinition }.count.should == 1
   end
 
   it "initializes itself with .create" do
