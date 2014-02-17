@@ -32,8 +32,10 @@ module CoreData
 
     def describe
       relationship_type = self.class.type_string(@min_count, @max_count)
+      dest_model = @destination_model.to_s.downcase
+      dest_model = dest_model.pluralize if @max_count != 1
       delete_rule = self.class.delete_string(@delete_rule)
-      "    #{@destination_model} (#{relationship_type}) => #{delete_rule}\n"
+      "    #{relationship_type} #{dest_model} through .#{@name} (#{delete_rule})\n"
     end
 
     def self.type_string(min, max)
@@ -46,13 +48,13 @@ module CoreData
 
     def self.delete_string(delete_rule)
       if delete_rule == DeleteRule::Nothing
-        "do nothing on delete"
+        "nothing on delete"
       elsif delete_rule == DeleteRule::Nullify
         "nullify on delete"
       elsif delete_rule == DeleteRule::Cascade
-        "cascade delete"
+        "cascade on delete"
       elsif delete_rule == DeleteRule::Deny
-        "don't allow deletes"
+        "deletion disallowed"
       end
     end
   end

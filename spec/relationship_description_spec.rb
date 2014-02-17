@@ -30,9 +30,10 @@ describe "The Core Data Relationship Description Class" do
 
   it "describes itself properly" do
     relationship_type = CoreData::RelationshipDescription.type_string(@min_count, @max_count)
+    dest_model = @destination_model.to_s.downcase.pluralize
     delete_rule = CoreData::RelationshipDescription.delete_string(@delete_rule)
     @channels_relationship_description.describe.should == \
-      "    #{@destination_model.to_s} (#{relationship_type}) => #{delete_rule}\n"
+      "    #{relationship_type} #{dest_model} through .#{@name} (#{delete_rule})\n"
   end
 
   it "can save and reconstruct itself through NSCoder via Packager" do

@@ -34,7 +34,7 @@ module CoreData
       else
         default_string = "no default"
       end
-      "    #{@name} => #{type_string}, #{optional_string}, #{default_string}\n"
+      "    #{@name} (#{type_string}, #{optional_string}, #{default_string})\n"
     end
 
     def self.optional_string(optional)
@@ -47,19 +47,19 @@ module CoreData
 
     def self.type_string(type)
       if type == PropertyTypes::String
-        "String"
+        "string"
       elsif type == PropertyTypes::Integer16
-        "Integer16"
+        "small integer"
       elsif type == PropertyTypes::Integer32
-        "Integer32"
+        "integer"
       elsif type == PropertyTypes::Integer64
-        "Integer64"
+        "large integer"
       elsif type == PropertyTypes::Boolean
-        "Boolean"
+        "bool"
       elsif type == PropertyTypes::Date
-        "Date"
+        "date"
       elsif type == PropertyTypes::Data
-        "Data"
+        "data"
       end
     end
   end

@@ -15,8 +15,8 @@ describe "The Courier Base Class" do
 
     class Keyboard < Courier::Base
       has_many :keys, as: :keys, on_delete: :cascade
-      property :brand, CoreData::PropertyTypes::String
-      property :lbs, CoreData::PropertyTypes::Integer16
+      property :brand, String
+      property :lbs, Integer16
     end
     Courier::Courier.instance.parcels = [Keyboard, Key]
   end

@@ -54,7 +54,7 @@ module Courier
     def self.coredata_property_from(property)
       CoreData::PropertyDefinition.new.tap do |p|
         p.name = property[0]
-        p.type = property[1]
+        p.type = ("CoreData::PropertyTypes::" + property[1].to_s).constantize
       end
     end
 

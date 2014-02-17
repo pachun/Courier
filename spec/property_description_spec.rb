@@ -30,7 +30,7 @@ describe "The Core Data Property Description Class" do
       default_string = "no default"
     end
     @name_property_description.describe.should == \
-      "    #{@name} => #{type_string}, #{optional_string}, #{default_string}\n"
+      "    #{@name} (#{type_string}, #{optional_string}, #{default_string})\n"
   end
 
   it "can save and reconstruct itself through NSCoder via Packager" do
