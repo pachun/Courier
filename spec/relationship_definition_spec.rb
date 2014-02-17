@@ -59,4 +59,11 @@ describe "A Core Data Relationship Definition" do
       @relationship.minCount.should == min
     end.should.not.raise(StandardError)
   end
+
+  it "provides a .same_as?(another_relationship) method" do
+    another_relationship = CoreData::RelationshipDefinition.new
+    @relationship.same_as?(another_relationship).should == true
+    another_relationship.max_count = 1
+    @relationship.same_as?(another_relationship).should == false
+  end
 end

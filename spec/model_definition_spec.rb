@@ -16,4 +16,11 @@ describe "A Core Data ModelDefinition" do
       @model_definition.managedObjectClassName.should == my_model.to_s
     end.should.not.raise(StandardError)
   end
+
+  it "provides a .same_as?(another_schema) method" do
+    another_model_definition = CoreData::ModelDefinition.new
+    @model_definition.same_as?(another_model_definition).should == true
+    another_model_definition.name = "hello"
+    @model_definition.same_as?(another_model_definition).should == false
+  end
 end

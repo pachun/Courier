@@ -24,4 +24,11 @@ describe "A Core Data PropertyDefinition" do
       @property_definition.defaultValue.should == default_value
     end.should.not.raise(StandardError)
   end
+
+  it "provides a .same_as?(another_property) method" do
+    another_property = CoreData::PropertyDefinition.new
+    @property_definition.same_as?(another_property).should == true
+    another_property.type = CoreData::PropertyTypes::Integer64
+    @property_definition.same_as?(another_property).should == false
+  end
 end

@@ -23,5 +23,13 @@ module CoreData
     def self.random_inverse_id
       (0...32).map{ (65+rand(26)).chr }.join
     end
+
+    def same_as?(other_relationship)
+      name == other_relationship.name &&
+        destination_model == other_relationship.destination_model &&
+        delete_rule == other_relationship.delete_rule
+        min_count == other_relationship.min_count &&
+        max_count == other_relationship.max_count
+    end
   end
 end
