@@ -1,5 +1,8 @@
 describe "The Core Data Schema Description Class" do
   before do
+    class Person < CoreData::Model; end
+    class Toy < CoreData::Model; end
+
     @person_model = CoreData::ModelDefinition.new
     @person_model.name = "Person"
     @person_model.model = Person
