@@ -16,4 +16,14 @@ describe "The Courier Class" do
     courier.parcels = [Cup, Plate]
     courier.contexts[:main].class.should == CoreData::Context
   end
+
+  # it "deletes all the /documents on .nuke.everything.right.now" do
+  #   file_manager = NSFileManager.defaultManager
+  #   app_documents_path = file_manager.URLsForDirectory(NSDocumentDirectory, inDomains:NSUserDomainMask).last
+  #   file_paths = file_manager.contentsOfDirectoryAtPath(app_documents_path, error:nil)
+  #   file_paths.count.should.be > 0
+  #   Courier.nuke.everything.right.now.should == true
+  #   file_paths = file_manager.contentsOfDirectoryAtPath(app_documents_path, error:nil)
+  #   file_paths.count.should == 0
+  # end
 end

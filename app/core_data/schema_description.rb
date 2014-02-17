@@ -20,6 +20,7 @@ module CoreData
     def to_schema
       definition = Schema.new.tap do |s|
         s.entities = @model_descriptions.map{ |m| m.to_definition }
+        s.version = @version
       end
       hem_relationship_inverses(definition)
       definition

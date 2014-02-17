@@ -4,8 +4,6 @@ module Courier
   MigrationLogSaveName = "migrations.log"
 
   class Courier
-    attr_accessor :migrator
-
     def self.instance
       @@instance ||= new
     end
@@ -19,24 +17,50 @@ module Courier
       @contexts
     end
 
+    def migrate(msg = "")
+      if @migrator.migrate_from(@persisted_schema, to:@schema)
+        @schema.version = @persisted_schema.version + 1
+        persist_schema
+        log_schema(msg)
+      end
+      sync_schema_with_store
+    end
+
+    def last_schema
+      puts @migrator.logs.last[:description]
+    end
+
+    def new_schema
+      puts CoreData::SchemaDescription.new(@schema).describe
+    end
+
     private
 
     def build_all
       build_schema
       if persisted_schema_exists?
-        @migrator = Migrator.load(MigrationLogSaveName)
-        @persisted_schema = persisted_schema.to_schema
-        if @persisted_schema.same_as?(@schema)
-          @schema.version = @persisted_schema.version
-        else
-          migrate
-        end
+        return if resolve_schema_differences == :asking_to_migrate
       else
-        @schema.version = 1
-        persist_schema
-        log_schema("First generated schema.")
+        persist_built_schema
       end
       sync_schema_with_store
+    end
+
+    def persist_built_schema
+      @schema.version = 1
+      persist_schema
+      log_schema("First generated schema.")
+    end
+
+    def resolve_schema_differences
+      @migrator = Migrator.load(MigrationLogSaveName)
+      @persisted_schema = persisted_schema.to_schema
+      if @persisted_schema.same_as?(@schema)
+        @schema.version = @persisted_schema.version
+      else
+        @migrator.ask_to_migrate_from(@persisted_schema, to:@schema)
+        :asking_to_migrate
+      end
     end
 
     def log_schema(message)
@@ -46,6 +70,7 @@ module Courier
     end
 
     def persist_schema
+      delete_persisted_schema if persisted_schema_exists?
       schema_description = CoreData::SchemaDescription.new(@schema)
       schema_description.save(SchemaSaveName)
     end
@@ -65,9 +90,8 @@ module Courier
       CoreData::SchemaDescription.load(SchemaSaveName)
     end
 
-    def migrate
-      @migrator = Migrator.new
-      puts "need to migrate"
+    def delete_persisted_schema
+      NSFileManager.defaultManager.removeItemAtPath(Packager.URL(SchemaSaveName).path, error:nil)
     end
 
     def build_schema

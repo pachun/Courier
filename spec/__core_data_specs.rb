@@ -1,11 +1,12 @@
 shared "A Core Data Spec" do
   before do
-    app_documents_path = NSFileManager.defaultManager.URLsForDirectory(NSDocumentDirectory, inDomains:NSUserDomainMask).last
-    default_store_url = app_documents_path.URLByAppendingPathComponent("default.sqlite")
-    courier_store_url = app_documents_path.URLByAppendingPathComponent("courier.sqlite")
-    [default_store_url, courier_store_url].each do |url|
-      NSFileManager.defaultManager.removeItemAtPath(url, error:nil)
-    end
+    Courier::nuke.everything.right.now
+    # app_documents_path = NSFileManager.defaultManager.URLsForDirectory(NSDocumentDirectory, inDomains:NSUserDomainMask).last
+    # default_store_url = app_documents_path.URLByAppendingPathComponent("default.sqlite")
+    # courier_store_url = app_documents_path.URLByAppendingPathComponent("courier.sqlite")
+    # [default_store_url, courier_store_url, Packager.URL(Courier::MigrationLogSaveName).path, Packager.URL(Courier::SchemaSaveName).path].each do |url|
+    #   NSFileManager.defaultManager.removeItemAtPath(url, error:nil)
+    # end
   end
 end
 

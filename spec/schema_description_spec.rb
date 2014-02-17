@@ -71,6 +71,7 @@ describe "The Core Data Schema Description Class" do
 
   it "has .to_schema to get back CoreData::Schema" do
     original_schema = @schema_description.to_schema
+    original_schema.version.should == @schema.version
     original_schema.entities.count.should == @schema.entities.count
   end
 end

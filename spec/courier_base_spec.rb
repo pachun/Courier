@@ -10,11 +10,11 @@ describe "The Courier Base Class" do
     end
 
     class Key < Courier::Base
-      belongs_to :keyboard, on_delete: :nullify
+      belongs_to :keyboard, as: :keyboard, on_delete: :nullify
     end
 
     class Keyboard < Courier::Base
-      has_many :keys, on_delete: :cascade
+      has_many :keys, as: :keys, on_delete: :cascade
       property :brand, CoreData::PropertyTypes::String
       property :lbs, CoreData::PropertyTypes::Integer16
     end

@@ -28,21 +28,21 @@ module Courier
     # "constantization" and hemming of inverse relationships will
     # happen just before a store_coordinator is generated from the
     # schema (in courier.rb)
-    def self.belongs_to(owner_class, on_delete:delete_action)
+    def self.belongs_to(owner_class, as:name, on_delete:delete_action)
       belongs_to = {min:0, max:1}
       owner_class = owner_class.to_s.capitalize
-      relationships << coredata_relationship_from(belongs_to, owner_class, delete_action)
+      relationships << coredata_relationship_from(belongs_to, owner_class, name, delete_action)
     end
 
-    def self.has_many(owned_class, on_delete:delete_action)
+    def self.has_many(owned_class, as:name, on_delete:delete_action)
       has_many = {min:0, max:0}
       owned_class = owned_class.to_s.singularize.capitalize
-      relationships << coredata_relationship_from(has_many, owned_class, delete_action)
+      relationships << coredata_relationship_from(has_many, owned_class, name, delete_action)
     end
 
-    def self.coredata_relationship_from(type, related_class, delete_action)
+    def self.coredata_relationship_from(type, related_class, name, delete_action)
       CoreData::RelationshipDefinition.new.tap do |r|
-        r.name = related_class.to_s
+        r.name = name.to_s
         r.local_model = self.to_s
         r.destination_model = related_class
         r.min_count = type[:min]
