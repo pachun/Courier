@@ -75,9 +75,6 @@ class AppDelegate
     toys.max_count = 0
     toys.delete_rule = CoreData::DeleteRule::Cascade
 
-    owner.inverse_relationship = toys
-    toys.inverse_relationship = owner
-
     toy_name = CoreData::PropertyDefinition.new
     toy_name.name = "name"
     toy_name.type = CoreData::PropertyTypes::String
@@ -89,6 +86,9 @@ class AppDelegate
     toy_model.properties = [toy_name, owner]
     person_model.properties = [person_name, toys]
 
+    owner.inverse_relationship = toys
+    toys.inverse_relationship = owner
+
     schema = CoreData::Schema.new
     schema.entities = [person_model, toy_model]
     store_coordinator = CoreData::StoreCoordinator.new(schema)
@@ -96,18 +96,18 @@ class AppDelegate
     context = CoreData::Context.new
     context.store_coordinator = store_coordinator
 
-    person = context.create(Person)
-    toy = context.create(Toy)
+    # person = context.create(Person)
+    # toy = context.create(Toy)
 
-    another_toy = context.create(Toy)
-    another_toy.name = "Scannerz"
+    # another_toy = context.create(Toy)
+    # another_toy.name = "Scannerz"
 
-    person.name = "Nick"
-    toy.name = "Bopit"
+    # person.name = "Nick"
+    # toy.name = "Bopit"
 
-    toy.owner = person
-    context.save
-    puts "saved."
+    # toy.owner = person
+    # context.save
+    # puts "saved."
 
     # people = Person.all(context)
     # toys = people.first.toys.allObjects
