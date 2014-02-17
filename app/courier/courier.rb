@@ -4,6 +4,8 @@ module Courier
   MigrationLogSaveName = "migrations.log"
 
   class Courier
+    attr_reader :migrator
+
     def self.instance
       @@instance ||= new
     end

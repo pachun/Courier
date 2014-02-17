@@ -28,8 +28,8 @@ module Courier
     # At /current/ point though, both models and inverse relationships have been defined,
     # so we can constantize now.
     def self.finalize(r1, and:r2)
-      r1.destination_model = r1.destination_model.constantize
-      r2.destination_model = r2.destination_model.constantize
+      r1.destination_model = r1.destination_model.constantize.to_coredata
+      r2.destination_model = r2.destination_model.constantize.to_coredata
     end
   end
 end
