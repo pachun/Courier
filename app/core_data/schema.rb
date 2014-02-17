@@ -1,5 +1,7 @@
 module CoreData
   class Schema < NSManagedObjectModel
+    attr_accessor :version
+
     def same_as?(other_schema)
       return false if entities.count != other_schema.entities.count
       entities.each do |e|

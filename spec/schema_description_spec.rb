@@ -39,7 +39,10 @@ describe "The Core Data Schema Description Class" do
     @toy_model.properties = [toy_name, owner]
     @person_model.properties = [person_name, toys]
 
+    @version = 4
+
     @schema = CoreData::Schema.new
+    @schema.version = @version
     @schema.entities = [@person_model, @toy_model]
     @schema_description = CoreData::SchemaDescription.new(@schema)
 
@@ -50,6 +53,7 @@ describe "The Core Data Schema Description Class" do
   it "persists all model definitions" do
     model_descriptions = @schema_description.model_descriptions
     model_descriptions.count.should == 2
+    @schema_description.version.should == @version
   end
 
   it "describes itself properly" do

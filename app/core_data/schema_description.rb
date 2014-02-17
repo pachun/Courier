@@ -10,6 +10,7 @@ module CoreData
     def initialize(*vars)
       schema = vars[0]
       if schema
+        @version = schema.version
         @model_descriptions = schema.entities.map do |e|
           CoreData::ModelDescription.new(e)
         end
