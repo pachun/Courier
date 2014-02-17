@@ -15,7 +15,7 @@ describe "The Courier Base Class" do
 
     class Keyboard < Courier::Base
       has_many :keys, as: :keys, on_delete: :cascade
-      property :brand, String
+      property :brand, String, required: true, default: "Dell"
       property :lbs, Integer16
     end
     Courier::Courier.instance.parcels = [Keyboard, Key]
@@ -66,5 +66,20 @@ describe "The Courier Base Class" do
     keyboard.brand = "Das"
     keyboard.lbs = 6
     lambda{ keyboard.save }.should.not.raise(StandardError)
+  end
+
+  it "defaults property.optional to false and property.default_value to nil" do
+    lbs_property = Keyboard.to_coredata.properties.select{ |p| p.name == "lbs" }.first
+    lbs_property.optional?.should == true
+    lbs_property.default_value.should == nil
+  end
+
+  it "sets required and default_value using opts in: property(name, type, opts={})" do
+    brand_property = Keyboard.to_coredata.properties.select{ |p| p.name == "brand" }.first
+    brand_property.optional?.should == false
+    brand_property.default_value.should == "Dell"
+  end
+
+  it "initializes d" do
   end
 end

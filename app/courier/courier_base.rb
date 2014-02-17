@@ -55,6 +55,10 @@ module Courier
       CoreData::PropertyDefinition.new.tap do |p|
         p.name = property[0]
         p.type = ("CoreData::PropertyTypes::" + property[1].to_s).constantize
+        if property[2]
+          p.optional = false || (!property[2][:required])
+          p.default_value = nil || property[2][:default]
+        end
       end
     end
 
