@@ -1,6 +1,5 @@
 module Courier
   class Base < CoreData::Model
-
     def self.to_coredata
       @coredata_definition ||= CoreData::ModelDefinition.new.tap do |m|
         m.name = self.to_s
@@ -100,16 +99,19 @@ module Courier
       Courier.instance.contexts[:main].create(self.to_s)
     end
 
-    def self.all
-      super(Courier.instance.contexts[:main])
-    end
-
     def save
-      Courier.instance.contexts[:main].save
+      Courier.instance.save
     end
 
     def delete
       Courier.instance.contexts[:main].deleteObject(self)
+    end
+
+    #
+    # Here on are scoping helpers (also there is an nsarray hack in another file)
+    #
+    def self.all
+      super(Courier.instance.contexts[:main])
     end
 
     def true_class
@@ -144,6 +146,9 @@ module Courier
       define_singleton_method("#{name}"){ class_constant.where(scope) }
     end
 
+    #
+    # Here on are resources for reading from json resources
+    #
     @@individual_url = ""
     @@collection_url = ""
     @@json_to_local = ""
@@ -169,6 +174,52 @@ module Courier
 
     def self.json_to_local
       @@json_to_local
+    end
+
+    def fetch(&block)
+      Courier.instance.lock_with(NSThread.currentThread)
+      BW::HTTP.get(resolve_url) do |response|
+        true_class.save_json(BW::JSON.parse(response.body), to:self) if response.ok?
+        Courier.instance.unlock_with(NSThread.currentThread)
+        block.call if block
+      end
+    end
+
+    def self.fetch_all(&block)
+      Courier.instance.lock_with(NSThread.currentThread)
+      url = Courier.instance.url + "/" + @@collection_url
+      BW::HTTP.get(url) do |response|
+        if response.ok?
+          json = BW::JSON.parse(response.body)
+          json.each do |current|
+            instance = self.create
+            save_json(current, to:instance)
+          end
+        end
+        Courier.instance.unlock_with(NSThread.currentThread)
+        block.call if block
+      end
+    end
+
+    def self.save_json(json, to:instance)
+      json_to_local.keys.each do |json_key|
+        if json.has_key?(json_key.to_s)
+          local_key = json_to_local[json_key]
+          instance.send("#{local_key}=", json[json_key.to_s])
+        end
+      end
+    end
+
+    private
+    def resolve_url
+      handle = true_class.individual_url.split("/").map do |peice|
+        if peice[0] == ":"
+          self.send(peice[1..-1].to_sym)
+        else
+          peice
+        end
+      end.join("/")
+      [Courier.instance.url, handle].join("/")
     end
   end
 end

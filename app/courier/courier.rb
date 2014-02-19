@@ -4,11 +4,27 @@ module Courier
   MigrationLogSaveName = "migrations.log"
 
   class Courier
-    attr_reader :migrator
+    attr_reader :migrator, :locks
     attr_accessor :url
 
     def self.instance
       @@instance ||= new
+    end
+
+    def initialize
+      @locks = []
+    end
+
+    def locked?
+      locks.count > 0
+    end
+
+    def lock_with(thread)
+      @locks << thread
+    end
+
+    def unlock_with(thread)
+      @locks.delete(thread)
     end
 
     def parcels=(parcels)
@@ -18,6 +34,15 @@ module Courier
 
     def contexts
       @contexts
+    end
+
+    def save
+      if locked?
+        false
+      else
+        @contexts[:main].save
+        true
+      end
     end
 
     def migrate(msg = "")

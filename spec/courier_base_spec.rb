@@ -19,6 +19,8 @@ describe "The Courier Base Class" do
       property :brand, String, required: true, default: "Dell"
       property :lbs, Integer16
 
+      attr_accessor :not_persisted1, :not_persisted2
+
       scope :heavy_plain, Courier::Scope.where(:lbs, is_greater_than_or_equal_to:4)
       scope :heavy_fancified, :and => ["lbs >= 4", "name = Das"]
 
@@ -216,11 +218,5 @@ describe "The Courier Base Class" do
     Courier::Courier.instance.contexts[:main].save
     kb1.keyboard_markings.count.should == 4
     kb2.keyboard_markings.count.should == 1
-  end
-
-  it "saves individual and collection urls as well as a json to local mapping" do
-    Keyboard.individual_url.should == "keyboards/:brand"
-    Keyboard.collection_url.should == "keyboards"
-    Keyboard.json_to_local.should == {brand_name: :brand, weight_in_pounds: :lbs}
   end
 end

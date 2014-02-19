@@ -9,6 +9,7 @@ rescue LoadError
 end
 
 require 'motion-support/inflector'
+require 'bubble-wrap/http'
 
 Motion::Project::App.setup do |app|
   # Use `rake config' to see complete project settings.

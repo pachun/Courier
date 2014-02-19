@@ -1,6 +1,7 @@
 GEM
   remote: https://rubygems.org/
   specs:
+    bubble-wrap (1.4.0)
     motion-require (0.0.7)
     motion-support (0.2.6)
       motion-require (>= 0.0.6)
@@ -10,5 +11,6 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  bubble-wrap
   motion-support
   rake

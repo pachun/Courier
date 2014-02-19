@@ -1,44 +1,35 @@
-# class Thing < Courier::Base
-#   belongs_to :person, as: :owner, on_delete: :nullify
-# 
-#   property :name, String
-# end
-# 
-# class Person < Courier::Base
-#   has_many :things, as: :toys, on_delete: :cascade
-# 
-#   property :name, String
-# end
+class Post < Courier::Base
+  property :id, Integer32
+  property :user_id, Integer32
+  property :title, String
+  property :body, String
 
-# class Person < Courier::Base
-#   property :name, CoreData::PropertyTypes::String
-# end
-
-# C = Courier::Courier.instance
-
-# class Person < CoreData::Model; end
-# class Toy < CoreData::Model; end
+  self.individual_url = "posts/:id"
+  self.collection_url = "posts"
+  self.json_to_local = {id: :id, userId: :user_id, title: :title, body: :body}
+end
 
 class AppDelegate
   def application(_, didFinishLaunchingWithOptions:_)
+    Courier::nuke.everything.right.now
 
-    # C.parcels = [Person, Thing]
+    @c = Courier::Courier.instance
+    @c.url = "http://jsonplaceholder.typicode.com"
+    @c.parcels = [Post]
 
-    # courier.parcels = [Person]
-
-    # person = Person.create
-    # person.name = "Nick"
-    # person.save
-
-    # all_people = Person.all
-    # unless all_people.nil?
-    #   puts "all people: #{all_people.map{|p|p.name}.inspect}"
+    # p = Post.create
+    # p.id = 4
+    # p.fetch do
+    #   puts "2 locked? #{@c.locked?}"
+    #   puts "post title: #{p.title}"
+    #   x = p.save
+    #   puts "x is #{x}"
     # end
+    # puts "1 locked? #{@c.locked?}"
+    # true
 
-    # schema_description = CoreData::SchemaDescription.load(Courier::SchemaSaveName)
-    # schema = schema_description.to_schema
-    # puts schema_description.describe
-
-    true
+    Post.fetch_all do
+      puts "posts: #{Post.all.map{|p|p.title}.inspect}"
+    end
   end
 end
