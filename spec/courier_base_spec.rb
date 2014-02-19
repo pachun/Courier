@@ -18,8 +18,14 @@ describe "The Courier Base Class" do
       property :brand, String, required: true, default: "Dell"
       property :lbs, Integer16
 
-      scope :heavy, Courier::Scope.where(:lbs, is_greater_than_or_equal_to:4)
+      scope :heavy_plain, Courier::Scope.where(:lbs, is_greater_than_or_equal_to:4)
+      scope :heavy_fancified, :and => ["lbs >= 4", "name = Das"]
     end
+
+    # class Marking < Courier::Base
+    #   belongs_to :key, as: :key, on_delete: :nullify
+    # end
+
     Courier::Courier.instance.parcels = [Keyboard, Key]
   end
 
@@ -169,7 +175,8 @@ describe "The Courier Base Class" do
       k.lbs = 1
     end
     Courier::Courier.instance.contexts[:main].save
-    Keyboard.scopes.count.should == 1
-    Keyboard.heavy.count.should == 1
+    Keyboard.scopes.count.should == 2
+    Keyboard.heavy_plain.count.should == 1
+    # Keyboard.heavy_fancified.count.should == 1
   end
 end

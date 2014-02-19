@@ -124,6 +124,9 @@ module Courier
     end
 
     def self.scope(name, scope)
+      if scope.class == {}.class || scope.class == String
+        scope = Scope.from_structure(scope)
+      end
       scopes << {name:name, scope:scope}
       class_constant = self
       define_singleton_method("#{name}"){ class_constant.where(scope) }
