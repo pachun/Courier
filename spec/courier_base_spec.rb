@@ -80,6 +80,53 @@ describe "The Courier Base Class" do
     brand_property.default_value.should == "Dell"
   end
 
-  it "initializes d" do
+  it "should return an unfrozen array of Key objects on keyboard.keys (not a faulting segment)" do
+    keyboard = Keyboard.create
+    key1 = Key.create
+    key2 = Key.create
+    key1.keyboard = keyboard
+    key2.keyboard = keyboard
+    all_keys = keyboard.keys
+    all_keys.frozen?.should == false
+    lambda{ all_keys << "hello" }.should.not.raise(StandardError)
+    all_keys.class.should == [].class
+    all_keys.should.include(key1)
+    all_keys.should.include(key2)
   end
+
+  it "provides .true_class to get ClassName instead of ClassName_Classname_" do
+    keyboard = Keyboard.create
+    keyboard.true_class.should == Keyboard
+  end
+
+  it "provides keyboard << key to add a key to a keyboard if keyboard has many keys" do
+    keyboard = Keyboard.create
+    key1 = Key.create
+    key2 = Key.create
+    key1.keyboard = keyboard
+    lambda{ keyboard << key2 }.should.not.raise(StandardError)
+    all_keys = keyboard.keys
+    all_keys.class.should == [].class
+    all_keys.should.include(key1)
+    all_keys.should.include(key2)
+  end
+
+  it "provides a .delete that obeys the relationships defined delete rule" do
+    apple_keyboard = Keyboard.create
+    apple_keyboard << Key.create
+    apple_keyboard.keys.last.delete
+    apple_keyboard.save
+    apple_keyboard.keys.count.should == 0
+    lambda{ apple_keyboard.keys }.should.not.raise(StandardError) # nullify works
+
+    das_keyboard = Keyboard.create
+    das_keyboard << Key.create
+    das_keyboard << Key.create
+    das_keyboard.delete
+    das_keyboard.save
+    Key.all.count.should == 0 # cascade works
+  end
+
+  # it "defines .where() the returns an NSPredicate" do
+  # end
 end

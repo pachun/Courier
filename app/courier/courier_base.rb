@@ -35,9 +35,31 @@ module Courier
     end
 
     def self.has_many(owned_class, as:name, on_delete:delete_action)
+
+      # if a keyboard has many keys, this provides keyboard.keys to return an array
+      # of all the keys
+      define_method("#{name}") do
+        frozen_array = self.send("#{name}__").allObjects
+        frozen_array.map{ |f| f }
+      end
+
+      # in the same context, this provides an alternative to setting a relationship from
+      # the owned side; eg we can do
+      #
+      # keyboard << key
+      #
+      # instead of
+      #
+      # key.keyboard = keyboard
+      #
+      define_method("<<") do |x|
+        owner_instance = self
+        x.send("#{owner_instance.true_class.to_s.downcase}=", owner_instance)
+      end
+
       has_many = {min:0, max:0}
       owned_class = owned_class.to_s.singularize.capitalize
-      relationships << coredata_relationship_from(has_many, owned_class, name, delete_action)
+      relationships << coredata_relationship_from(has_many, owned_class, "#{name}__", delete_action)
     end
 
     def self.coredata_relationship_from(type, related_class, name, delete_action)
@@ -72,6 +94,23 @@ module Courier
 
     def save
       Courier.instance.contexts[:main].save
+    end
+
+    def delete
+      Courier.instance.contexts[:main].deleteObject(self)
+    end
+
+    def true_class
+      dynamic_subclass = self.class.to_s
+      peices = dynamic_subclass.split("_")
+      if peices.count > 1
+        peices[0].constantize
+      else
+        self.class
+      end
+    end
+
+    def where(*conditions)
     end
   end
 end
