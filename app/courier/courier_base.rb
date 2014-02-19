@@ -143,5 +143,32 @@ module Courier
       class_constant = self
       define_singleton_method("#{name}"){ class_constant.where(scope) }
     end
+
+    @@individual_url = ""
+    @@collection_url = ""
+    @@json_to_local = ""
+    def self.individual_url=(url)
+      @@individual_url = url
+    end
+
+    def self.collection_url=(url)
+      @@collection_url = url
+    end
+
+    def self.json_to_local=(url)
+      @@json_to_local = url
+    end
+
+    def self.individual_url
+      @@individual_url
+    end
+
+    def self.collection_url
+      @@collection_url
+    end
+
+    def self.json_to_local
+      @@json_to_local
+    end
   end
 end

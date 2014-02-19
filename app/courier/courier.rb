@@ -5,6 +5,7 @@ module Courier
 
   class Courier
     attr_reader :migrator
+    attr_accessor :url
 
     def self.instance
       @@instance ||= new

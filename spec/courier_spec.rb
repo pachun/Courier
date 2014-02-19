@@ -17,6 +17,11 @@ describe "The Courier Class" do
     courier.contexts[:main].class.should == CoreData::Context
   end
 
+  it "keeps track of a url for fetching remote resources" do
+    Courier::Courier.instance.url = "pachulski.me"
+    Courier::Courier.instance.url.should == "pachulski.me"
+  end
+
   # it "deletes all the /documents on .nuke.everything.right.now" do
   #   file_manager = NSFileManager.defaultManager
   #   app_documents_path = file_manager.URLsForDirectory(NSDocumentDirectory, inDomains:NSUserDomainMask).last

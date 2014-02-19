@@ -15,11 +15,16 @@ describe "The Courier Base Class" do
     class Keyboard < Courier::Base
       has_many :keys, as: :keys, on_delete: :cascade
       has_many :keyboard_markings, through: [:keys, :markings]
+
       property :brand, String, required: true, default: "Dell"
       property :lbs, Integer16
 
       scope :heavy_plain, Courier::Scope.where(:lbs, is_greater_than_or_equal_to:4)
       scope :heavy_fancified, :and => ["lbs >= 4", "name = Das"]
+
+      self.json_to_local = {brand_name: :brand, weight_in_pounds: :lbs}
+      self.individual_url = "keyboards/:brand"
+      self.collection_url = "keyboards"
     end
 
     class Key < Courier::Base
@@ -210,6 +215,12 @@ describe "The Courier Base Class" do
 
     Courier::Courier.instance.contexts[:main].save
     kb1.keyboard_markings.count.should == 4
-    # kb2.markings.count.should == 1
+    kb2.keyboard_markings.count.should == 1
+  end
+
+  it "saves individual and collection urls as well as a json to local mapping" do
+    Keyboard.individual_url.should == "keyboards/:brand"
+    Keyboard.collection_url.should == "keyboards"
+    Keyboard.json_to_local.should == {brand_name: :brand, weight_in_pounds: :lbs}
   end
 end
