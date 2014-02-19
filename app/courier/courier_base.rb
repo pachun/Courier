@@ -34,6 +34,18 @@ module Courier
       relationships << coredata_relationship_from(belongs_to, owner_class, name, delete_action)
     end
 
+    # this doesnt add an actial relationship; just dynamically
+    # defines a method to traverse the has_many:through: relationship
+    # breadcrumbs on the intermediary and destination classes
+    def self.has_many(name, through:relationship_breadcrumbs)
+      middling_relationship = relationship_breadcrumbs.first
+      destination_relationship = relationship_breadcrumbs.last
+      define_method("#{name}") do
+        middling_objects = self.send("#{middling_relationship}")
+        middling_objects.map{ |c| c.send("#{destination_relationship}") }.flatten
+      end
+    end
+
     def self.has_many(owned_class, as:name, on_delete:delete_action)
 
       # if a keyboard has many keys, this provides keyboard.keys to return an array

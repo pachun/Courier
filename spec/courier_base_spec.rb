@@ -8,13 +8,13 @@ describe "The Courier Base Class" do
     if Object.constants.include?(:Key)
       Object.send(:remove_const, :Key)
     end
-
-    class Key < Courier::Base
-      belongs_to :keyboard, as: :keyboard, on_delete: :nullify
+    if Object.constants.include?(:Marking)
+      Object.send(:remove_const, :Marking)
     end
 
     class Keyboard < Courier::Base
       has_many :keys, as: :keys, on_delete: :cascade
+      has_many :keyboard_markings, through: [:keys, :markings]
       property :brand, String, required: true, default: "Dell"
       property :lbs, Integer16
 
@@ -22,11 +22,16 @@ describe "The Courier Base Class" do
       scope :heavy_fancified, :and => ["lbs >= 4", "name = Das"]
     end
 
-    # class Marking < Courier::Base
-    #   belongs_to :key, as: :key, on_delete: :nullify
-    # end
+    class Key < Courier::Base
+      belongs_to :keyboard, as: :keyboard, on_delete: :nullify
+      has_many :markings, as: :markings, on_delete: :cascade
+    end
 
-    Courier::Courier.instance.parcels = [Keyboard, Key]
+    class Marking < Courier::Base
+      belongs_to :key, as: :key, on_delete: :nullify
+    end
+
+    Courier::Courier.instance.parcels = [Keyboard, Key, Marking]
   end
 
   it "is a descendant of CoreData::Model" do
@@ -165,7 +170,7 @@ describe "The Courier Base Class" do
     all_keyboards.count.should == 1
   end
 
-  it "allows for named scopes" do
+  it "has working named scopes" do
     apple_keyboard = Keyboard.create.tap do |k|
       k.brand = "Das"
       k.lbs = 5
@@ -178,5 +183,33 @@ describe "The Courier Base Class" do
     Keyboard.scopes.count.should == 2
     Keyboard.heavy_plain.count.should == 1
     # Keyboard.heavy_fancified.count.should == 1
+  end
+
+  it "has working has_many:through:as: relationships" do
+    kb1 = Keyboard.create
+    key1 = Key.create
+    key2 = Key.create
+    kb1 << key1
+    kb1 << key2
+    m1 = Marking.create
+    m2 = Marking.create
+    m3 = Marking.create
+    m4 = Marking.create
+    key1 << m1
+    key2 << m2
+    key2 << m3
+    key2 << m4
+
+    kb2 = Keyboard.create
+    key3 = Key.create
+    key4 = Key.create
+    kb2 << key3
+    kb2 << key4
+    m5 = Marking.create
+    key3 << m5
+
+    Courier::Courier.instance.contexts[:main].save
+    kb1.keyboard_markings.count.should == 4
+    # kb2.markings.count.should == 1
   end
 end
