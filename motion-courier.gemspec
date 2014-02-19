@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name        = 'motion-courier'
-  s.version     = '0.0.4'
+  s.version     = '0.0.5'
   s.date        = '2014-02-19'
   s.summary     = "A Core Data abstraction for rubymotion."
   s.description = "A RubyMotion abstraction of Core Data that also provides shortcuts for fetching json resources."
