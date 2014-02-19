@@ -110,7 +110,35 @@ module Courier
       end
     end
 
-    def where(*conditions)
+    def self.where(scope)
+      fetch = NSFetchRequest.fetchRequestWithEntityName(self.to_s)
+      fetch.setPredicate(scope)
+      error = Pointer.new(:object)
+      results = Courier.instance.contexts[:main].executeFetchRequest(fetch, error:error)
+      puts "Error searching for #{scope.predicateFormat}: #{error[0]}" unless error[0].nil?
+      results
     end
+
+    def self.scopes
+      @scopes ||= []
+    end
+
+    def self.scope(name, scope)
+      scopes << {name:name, scope:scope}
+      class_constant = self
+      define_singleton_method("#{name}"){ class_constant.where(scope) }
+    end
+  end
+end
+
+# Had to pollute NSArray here for chaining scoped calls
+class NSArray < NSObject
+  def where(scope)
+    fetch = NSFetchRequest.fetchRequestWithEntityName(first.true_class.to_s)
+    fetch.setPredicate(scope)
+    error = Pointer.new(:object)
+    results = filteredArrayUsingPredicate(scope)
+    puts "Error searching for #{scope.predicateFormat}: #{error[0]}" unless error[0].nil?
+    results
   end
 end

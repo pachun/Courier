@@ -17,6 +17,8 @@ describe "The Courier Base Class" do
       has_many :keys, as: :keys, on_delete: :cascade
       property :brand, String, required: true, default: "Dell"
       property :lbs, Integer16
+
+      scope :heavy, Courier::Scope.where(:lbs, is_greater_than_or_equal_to:4)
     end
     Courier::Courier.instance.parcels = [Keyboard, Key]
   end
@@ -127,6 +129,47 @@ describe "The Courier Base Class" do
     Key.all.count.should == 0 # cascade works
   end
 
-  # it "defines .where() the returns an NSPredicate" do
-  # end
+  it "provides a Class.where() which takes an NSPredicate" do
+    apple_keyboard = Keyboard.create.tap do |k|
+      k.brand = "Das"
+      k.lbs = 1
+    end
+    das_keyboard = Keyboard.create.tap do |k|
+      k.brand = "Apple"
+      k.lbs = 5
+    end
+    Courier::Courier.instance.contexts[:main].save
+    scope = Courier::Scope.where(:brand, is_any_of: ["Apple", "Das2.0"])
+    results = Keyboard.where(scope)
+    results.count.should == 1
+  end
+
+  it "provides an instance.where() which takes an NSPredicate" do
+    apple_keyboard = Keyboard.create.tap do |k|
+      k.brand = "Das"
+      k.lbs = 5
+    end
+    das_keyboard = Keyboard.create.tap do |k|
+      k.brand = "Apple"
+      k.lbs = 1
+    end
+    Courier::Courier.instance.contexts[:main].save
+    scope = Courier::Scope.where(:lbs, is_greater_than: 3)
+    all_keyboards = Keyboard.all.where(scope)
+    all_keyboards.count.should == 1
+  end
+
+  it "allows for named scopes" do
+    apple_keyboard = Keyboard.create.tap do |k|
+      k.brand = "Das"
+      k.lbs = 5
+    end
+    das_keyboard = Keyboard.create.tap do |k|
+      k.brand = "Apple"
+      k.lbs = 1
+    end
+    Courier::Courier.instance.contexts[:main].save
+    Keyboard.scopes.count.should == 1
+    Keyboard.heavy.count.should == 1
+  end
 end
