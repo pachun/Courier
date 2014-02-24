@@ -18,11 +18,11 @@ require 'motion-support/inflector'
 require 'bubble-wrap/http'
 ```
 
-I'm having trouble automating that on gem inclusion. If anyone knows how, please send a pull request or let me know how - hello@nickpachulski.com.
+I'm having trouble automating that on gem inclusion. If anyone knows how, please send me a pull request or take the time to let me know how - hello@nickpachulski.com.
 
 --
 ###Models
-To illustrate most features succinctly:
+Here's a succinct illustration of most features:
 
 ```ruby
 class League < Courier::Base
@@ -60,7 +60,7 @@ end
 ```
 --
 ###Schema
-Defining the models doesn't implicitly define a schema (managed object model) for you. You have to tell Courier the names of the models. There is a singleton courier instance you can get and setup:
+Defining the models doesn't implicitly define a schema (managed object model) for you. You have to tell Courier the names of the models. You use the singleton courier instance to do that.
 
 ```ruby
 C = Courier::Courier.instance
@@ -72,18 +72,11 @@ class AppDelegate
   end
 end
 ```
-I do this in my app delegate, so from then on you can say C instead of Courier::Courier.instance from then on.
-
-You can also get a string description of the schema with .schema(). For instance
-
+I do this in my app delegate, so I can say C instead of Courier::Courier.instance from then on. You can also get a string description of the schema with .schema
 ```ruby
 puts "#{Courier::Courier.instance.schema}"
 ```
-would print
-
-![schema](http://i.imgur.com/dIaHhB5.png =590x564)
-
-for the schema defined earlier
+![schema](http://i.imgur.com/77G9QGR.png)
 
 --
 ###Tests
@@ -93,16 +86,13 @@ If you're doing a lot of testing, you probably want to clear old tests data out 
 Courier::nuke.everything.right.now
 ```
 
-It's intentionally long so you don't type it by accident in a production app and lose your db. Anyway, throwing this in a before block is a good way to test core data with different schemas and clean slates. The courier_base_spec.rb has a good example of using this:
+It's intentionally long so you don't type it by accident in a production app and lose your db. Anyway, throwing this in a before block is a good way to test core data with different schemas and clean slate databases. The courier_base_spec.rb has a good example of using this:
 
 ```ruby
 describe "The Courier Base Class" do
-  behaves_like "A Core Data Spec"
-
   before do
-    if Object.constants.include?(:Keyboard)
-      Object.send(:remove_const, :Keyboard)
-    end
+    Courier::nuke.everything.right.now
+    Object.send(:remove_const, :Keyboard) if Object.constants.include?(:Keyboard)
 
     class Keyboard < Courier::Base; end
     Courier::Courier.instance.parcels = [Keyboard]
@@ -169,9 +159,9 @@ If you have relationships like a team having many players, you can also do thing
 ```ruby
 team = Team.create
 some_player = Player.create
-team.players << Player.create
-team.players << some_player
-team.players # => [those 2 players]
+team.players << Player.create         # either
+some_player.team = team               # or
+team.players # => [those 2 players]   # both work exactly the same
 ```
 
 Remember to call save to persist those models/relationships. The same applies to has_many:through: relationships. Similarly, if a team has_many players through team players, you can do
