@@ -203,7 +203,7 @@ You can nest those as deeply as you want, and there's a lot of them. Check out t
 
 --
 ###JSON Resources
-If you know your endpoint, set the base url on courier's instance, and the resource path on the model:
+Set the base url on courier's instance, and the resource path on the model:
 
 ```ruby
 class Team < Courier::Base
@@ -226,6 +226,15 @@ team.fetch do
 end
 ```
 
+To get all teams, you can do
+
+```ruby
+Team.fetch_all do
+  Courier::Courier.instance.save
+end
+```
+
+--
 ##To Do
 
 Been working really hard on getting [lightweight](https://developer.apple.com/library/ios/documentation/cocoa/conceptual/CoreDataVersioning/Articles/vmLightweightMigration.html) command line migrations working.
