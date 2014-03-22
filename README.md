@@ -30,7 +30,7 @@ Here's a succinct illustration of most features:
 class League < Courier::Base
   has_many :teams, as: :teams, on_delete: :cascade
   has_many :players, through: [:teams, :players]
-  
+
   attr_accessor :unpersisted_variables_here, :commissioner
 end
 
@@ -214,7 +214,9 @@ end
 ```
 
 You can nest those as deeply as you want, and there's a lot of them. Check out
-the courier_scope_spec.rb file to see them all. [Everything in here](https://developer.apple.com/library/mac/documentation/cocoa/conceptual/predicates/Articles/pSyntax.html) is provisioned for by (the Courier::Scope module)[https://github.com/pachun/Courier/blob/master/app/courier/scope.rb].
+the courier_scope_spec.rb file to see them all. [Everything in
+here](https://developer.apple.com/library/mac/documentation/cocoa/conceptual/predicates/Articles/pSyntax.html)
+is provisioned for by [the Courier::Scope module](https://github.com/pachun/Courier/blob/master/app/courier/scope.rb).
 Some of the string comparisons like LIKE to find a string that contains another
 string can be tricky to use with those "x >= y" string format of comparison
 above. If you need to be really specific you can use Courier::Scope.where(:name,
@@ -226,12 +228,10 @@ courier_scope_spec.rb file.
 ###Dynamic Scopes
 
 ```ruby
-my_scope = Courier::Scope.where(:or => [ :and => ["age >= 40",
-"num_championships >= 2"],
-                                         :and => ["age >= 30",
-"num_championships >= 4"],
-                                ])
-team.players.where(my_scope) # => [player1, player2, etc]
+seasoned_scope = Courier::Scope.where(:or => [ :and => ["age >= 40", "num_championships >= 2"],
+                                               :and => ["age >= 30", "num_championships >= 4"],
+                                      ])
+team.players.where(seasoned_scope) # => [player1, player2, etc]
 ```
 
 --
