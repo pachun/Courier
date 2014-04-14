@@ -272,14 +272,12 @@ end
 --
 ###To Do
 
-* Been working really hard on getting
-* [lightweight](https://developer.apple.com/library/ios/documentation/cocoa/conceptual/CoreDataVersioning/Articles/vmLightweightMigration.html)
-* command line migrations working.
+* Remove need for .save call, by creating an independent context for each object and then merging it into the main context when it's required fields are all satisfied.
+
+* Every time a core data object is .create'd or one of its properties are modified, return true if the new context could merge back into the main context, or a string with an error message if not.
+
 * Replace Bubble-Wrap/http with AFMotion
-* Remove need for .save call, by creating an independent context for each object
-* .create'd and then merging it into the main context when it's required fields
-* are all satisfied.
-* Validations with custom "fix" messages
-* Some kind of auto-resolution for fetching a bunch of object from a json
-* endpoint, when they already exist locally. Should have a field designated as
-* :key or something.
+
+* Some kind of auto-resolution for fetching a bunch of object from a json endpoint, when they already exist locally. Should have a field designated as :key or something to facilitate this.
+
+* [lightweight](https://developer.apple.com/library/ios/documentation/cocoa/conceptual/CoreDataVersioning/Articles/vmLightweightMigration.html) command line migrations.
