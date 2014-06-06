@@ -10,6 +10,7 @@ end
 
 require 'motion-support/inflector'
 require 'bubble-wrap/http'
+require 'webstub'
 
 Motion::Project::App.setup do |app|
   # Use `rake config' to see complete project settings.

@@ -25,8 +25,8 @@ describe "The Courier Base Class" do
       scope :heavy_fancified, :and => ["lbs >= 4", "name = Das"]
 
       self.json_to_local = {brand_name: :brand, weight_in_pounds: :lbs}
-      self.individual_url = "keyboards/:brand"
-      self.collection_url = "keyboards"
+      self.individual_path = "keyboards/:brand"
+      self.collection_path = "keyboards"
     end
 
     class Key < Courier::Base
@@ -39,6 +39,13 @@ describe "The Courier Base Class" do
     end
 
     Courier::Courier.instance.parcels = [Keyboard, Key, Marking]
+    Courier::Courier.instance.url = "xyz.com/"
+  end
+
+  it "correctly calculates an instances individual URL (accounting for potential trailing slash on the base url" do
+    k = Keyboard.create
+    k.brand = "Das"
+    k.individual_url.should == "xyz.com/keyboards/Das"
   end
 
   it "is a descendant of CoreData::Model" do
@@ -218,5 +225,11 @@ describe "The Courier Base Class" do
     Courier::Courier.instance.contexts[:main].save
     kb1.keyboard_markings.count.should == 4
     kb2.keyboard_markings.count.should == 1
+  end
+
+  it "provides .create_in_new_context to create an object in a new context" do
+    kb1 = Keyboard.create
+    kb2 = Keyboard.create_in_new_context
+    kb1.context.should != kb2.context
   end
 end

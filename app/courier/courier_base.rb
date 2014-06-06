@@ -99,6 +99,10 @@ module Courier
       Courier.instance.contexts[:main].create(self.to_s)
     end
 
+    def self.create_in_new_context
+      Courier.instance.new_context.create(self.to_s)
+    end
+
     def save
       Courier.instance.save
     end
@@ -147,29 +151,30 @@ module Courier
     end
 
     #
-    # Here on are resources for reading from json resources
+    # reading json resources...
     #
-    @@individual_url = ""
-    @@collection_url = ""
+
+    @@individual_path = ""
+    @@collection_path = ""
     @@json_to_local = ""
-    def self.individual_url=(url)
-      @@individual_url = url
+    def self.individual_path=(path)
+      @@individual_path = path
     end
 
-    def self.collection_url=(url)
-      @@collection_url = url
+    def self.collection_path=(path)
+      @@collection_path = path
     end
 
-    def self.json_to_local=(url)
-      @@json_to_local = url
+    def self.json_to_local=(mapping)
+      @@json_to_local = mapping
     end
 
-    def self.individual_url
-      @@individual_url
+    def self.individual_path
+      @@individual_path
     end
 
-    def self.collection_url
-      @@collection_url
+    def self.collection_path
+      @@collection_path
     end
 
     def self.json_to_local
@@ -177,29 +182,63 @@ module Courier
     end
 
     def fetch(&block)
-      Courier.instance.lock_with(NSThread.currentThread)
-      BW::HTTP.get(resolve_url) do |response|
-        true_class.save_json(BW::JSON.parse(response.body), to:self) if response.ok?
-        Courier.instance.unlock_with(NSThread.currentThread)
-        block.call if block
+      AFMotion::HTTP.get(individual_url) do |result|
+        if result.success?
+          _save_single_resource_in_new_context(result.object, &block)
+        else
+          puts "error while fetching #{self.class.to_s.downcase} resource: #{result.error.localizedDescription}"
+        end
       end
     end
 
-    def self.fetch_all(&block)
-      Courier.instance.lock_with(NSThread.currentThread)
-      url = Courier.instance.url + "/" + @@collection_url
-      BW::HTTP.get(url) do |response|
-        if response.ok?
-          json = BW::JSON.parse(response.body)
-          json.each do |current|
-            instance = self.create
-            save_json(current, to:instance)
-          end
+    def _save_single_resource_in_new_context(json, &block)
+      fetched_resource = true_class.create_in_new_context
+      true_class.save_json(json, to:fetched_resource)
+      block.call(fetched_resource)
+    end
+
+    def fetch!(&block)
+      AFMotion::HTTP.get(individual_url) do |result|
+        if result.success?
+          _save_single_resource_in_same_context(result.object, &block)
+        else
+          puts "error while fetching #{self.class.to_s.downcase} resource: #{result.error.localizedDescription}"
         end
-        Courier.instance.unlock_with(NSThread.currentThread)
-        block.call if block
       end
     end
+
+    def _save_single_resource_in_same_context(json, &block)
+      true_class.save_json(json, to:self)
+      block.call
+    end
+
+    #
+    # old, deprecated when bubble-wrap dropped support for it's http module
+    #
+    # def fetch(&block)
+    #   Courier.instance.lock_with(NSThread.currentThread)
+    #   BW::HTTP.get(resolve_url) do |response|
+    #     true_class.save_json(BW::JSON.parse(response.body), to:self) if response.ok?
+    #     Courier.instance.unlock_with(NSThread.currentThread)
+    #     block.call if block
+    #   end
+    # end
+    #
+    # def self.fetch_all(&block)
+    #   Courier.instance.lock_with(NSThread.currentThread)
+    #   url = Courier.instance.url + "/" + @@collection_path
+    #   BW::HTTP.get(url) do |response|
+    #     if response.ok?
+    #       json = BW::JSON.parse(response.body)
+    #       json.each do |current|
+    #         instance = self.create
+    #         save_json(current, to:instance)
+    #       end
+    #     end
+    #     Courier.instance.unlock_with(NSThread.currentThread)
+    #     block.call if block
+    #   end
+    # end
 
     def self.save_json(json, to:instance)
       json_to_local.keys.each do |json_key|
@@ -210,16 +249,16 @@ module Courier
       end
     end
 
-    private
-    def resolve_url
-      handle = true_class.individual_url.split("/").map do |peice|
-        if peice[0] == ":"
-          self.send(peice[1..-1].to_sym)
-        else
-          peice
-        end
-      end.join("/")
-      [Courier.instance.url, handle].join("/")
+    def individual_url
+      handle =
+        true_class.individual_path.split("/").map do |peice|
+          if peice[0] == ":"
+            self.send(peice[1..-1].to_sym)
+          else
+            peice
+          end
+        end.join("/")
+        [Courier.instance.url, handle].join("/").split("//").join("/")
     end
   end
 end

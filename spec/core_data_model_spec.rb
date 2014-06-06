@@ -14,6 +14,11 @@ describe "A Core Data Model Instance" do
     @person_model.greet.should == "Hello"
   end
 
+  it "aliases .managedObjectContext to .context" do
+    @person_model.managedObjectContext.should == @context
+    @person_model.context.should == @context
+  end
+
   describe "The Core Data Model Class" do
     it "can discover it's model definition class given a context" do
       Person.model_definition(@context).should == @person_model_definition

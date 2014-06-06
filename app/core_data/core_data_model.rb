@@ -1,5 +1,7 @@
 module CoreData
   class Model < NSManagedObject
+    alias_method :context, :managedObjectContext
+
     def self.model_definition(context)
       entities = context.store_coordinator.schema.entities
       entities.select{ |e| e.model == self.to_s }.first

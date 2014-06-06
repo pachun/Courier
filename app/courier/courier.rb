@@ -62,6 +62,13 @@ module Courier
       puts CoreData::SchemaDescription.new(@schema).describe
     end
 
+    def new_context
+      context_name = "context_" + @contexts.keys.count.to_s
+      @contexts[@context_name] = CoreData::Context.new.tap do |context|
+        context.store_coordinator = @store_coordinator
+      end
+    end
+
     private
 
     def build_all
