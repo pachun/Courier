@@ -9,7 +9,6 @@ rescue LoadError
 end
 
 require 'motion-support/inflector'
-require 'bubble-wrap/http'
 require 'webstub'
 
 Motion::Project::App.setup do |app|

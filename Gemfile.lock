@@ -7,9 +7,6 @@ GEM
     afmotion (2.0.0)
       motion-cocoapods (~> 1.4.0)
       motion-require (~> 0.0.7)
-    bubble-wrap (1.6.0)
-      bubble-wrap-http (= 1.6.0)
-    bubble-wrap-http (1.6.0)
     claide (0.6.1)
     cocoapods (0.33.1)
       activesupport (>= 3.2.15, < 4)
@@ -63,7 +60,6 @@ PLATFORMS
 
 DEPENDENCIES
   afmotion (~> 2.0.0)
-  bubble-wrap
   motion-support
   rake
   webstub
