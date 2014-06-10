@@ -10,7 +10,7 @@ describe "The Courier Base Class' JSON resource syncing functionality" do
 
     @json_to_local_hash = {id: :id, userId: :user_id, title: :title, body: :body}
     class Post < Courier::Base
-      property :id, Integer32
+      property :id, Integer32#, :key
       property :user_id, Integer32
       property :title, String
       property :body, String
@@ -59,4 +59,23 @@ describe "The Courier Base Class' JSON resource syncing functionality" do
       @c.contexts.count.should == prior_num_contexts
     end
   end
+
+  it "generates its post parameters correctly" do
+    @post.user_id = 10
+    @post.post_parameters.should == {id: 4, userId: 10}
+    @post.title = "Hello World"
+    @post.post_parameters.should == {id: 4, userId: 10, title: "Hello World"}
+  end
+
+  it "does a push" do
+    @post.push do |response|
+      puts "hello"
+      true.should == true
+    end
+    wait 1
+  end
+
+  # it "knows which properties are keys" do
+  #   Post.keys.should == [:id]
+  # end
 end

@@ -181,6 +181,8 @@ module Courier
       @@json_to_local
     end
 
+    # single resource "soft" fetch
+
     def fetch(&block)
       AFMotion::HTTP.get(individual_url) do |result|
         if result.success?
@@ -197,6 +199,8 @@ module Courier
       block.call(fetched_resource)
     end
 
+    # single resource "hard" fetch
+
     def fetch!(&block)
       AFMotion::HTTP.get(individual_url) do |result|
         if result.success?
@@ -210,6 +214,14 @@ module Courier
     def _save_single_resource_in_same_context(json, &block)
       true_class.save_json(json, to:self)
       block.call
+    end
+
+    # single resource post
+
+    def push(&block)
+      AFMotion::JSON.post(individual_url, post_parameters) do |result|
+        block.call(result)
+      end
     end
 
     #
@@ -259,6 +271,18 @@ module Courier
           end
         end.join("/")
         [Courier.instance.url, handle].join("/").split("//").join("/")
+    end
+
+    # self.json_to_local = {id: :id, userId: :user_id, title: :title, body: :body}#@json_to_local_hash
+
+    def post_parameters
+      {}.tap do |params|
+        true_class.json_to_local.keys.map do |json_key|
+          local_key = true_class.json_to_local[json_key]
+          attribute_value = send("#{local_key}")
+          params[json_key] = attribute_value unless attribute_value.nil?
+        end
+      end
     end
   end
 end
