@@ -8,16 +8,15 @@ describe "The Courier Base Class' JSON resource syncing functionality" do
 
     @post_json = {"title"=>"eum et est occaecati", "id"=>4, "userId"=>1, "body"=>"ullam et saepe reiciendis voluptatem adipiscisit amet autem assumenda provident rerum culpaquis hic commodi nesciunt rem tenetur doloremque ipsam iurequis sunt voluptatem rerum illo velit"}
 
-    @json_to_local_hash = {id: :id, userId: :user_id, title: :title, body: :body}
     class Post < Courier::Base
-      property :id, Integer32#, :key
-      property :user_id, Integer32
+      property :id, Integer32, key: true
+      property :user_id, Integer32, key: true
       property :title, String
       property :body, String
 
       self.individual_path = "posts/:id"
       self.collection_path = "posts"
-      self.json_to_local = {id: :id, userId: :user_id, title: :title, body: :body}#@json_to_local_hash
+      self.json_to_local = {id: :id, userId: :user_id, title: :title, body: :body}
     end
 
     @c = Courier::Courier.instance
@@ -67,15 +66,10 @@ describe "The Courier Base Class' JSON resource syncing functionality" do
     @post.post_parameters.should == {id: 4, userId: 10, title: "Hello World"}
   end
 
-  it "does a push" do
-    @post.push do |response|
-      puts "hello"
-      true.should == true
-    end
-    wait 1
+  it "knows which properties are keys" do
+    Post.keys.should == [:id, :user_id]
   end
 
-  # it "knows which properties are keys" do
-  #   Post.keys.should == [:id]
-  # end
+  # it translates key: :default to an integer increment that auto assigns 0,1,2,3,4
+  #   also checks db for highest existing id and assigns next one (if 11 is in db, assigns 12)
 end

@@ -16,8 +16,20 @@ module Courier
       @relationships ||= []
     end
 
+    def self.keys
+      @keys ||= []
+    end
+
     def self.property(*property)
+      check_for_key_in(property)
       properties << coredata_property_from(property)
+    end
+
+    def self.check_for_key_in(property)
+      @keys ||= []
+      if property[2] && property[2][:key]
+        @keys << property[0]
+      end
     end
 
     # Setting the owner_class and owned_classes as a String for now,
