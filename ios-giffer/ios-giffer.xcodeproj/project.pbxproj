@@ -1,0 +1,454 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		DF1F1F91194F2FDF000320EF /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DF1F1F90194F2FDF000320EF /* Foundation.framework */; };
+		DF1F1F93194F2FDF000320EF /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DF1F1F92194F2FDF000320EF /* CoreGraphics.framework */; };
+		DF1F1F95194F2FDF000320EF /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DF1F1F94194F2FDF000320EF /* UIKit.framework */; };
+		DF1F1F9B194F2FDF000320EF /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = DF1F1F99194F2FDF000320EF /* InfoPlist.strings */; };
+		DF1F1F9D194F2FDF000320EF /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = DF1F1F9C194F2FDF000320EF /* main.m */; };
+		DF1F1FA1194F2FDF000320EF /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = DF1F1FA0194F2FDF000320EF /* AppDelegate.m */; };
+		DF1F1FA3194F2FDF000320EF /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = DF1F1FA2194F2FDF000320EF /* Images.xcassets */; };
+		DF1F1FAA194F2FDF000320EF /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DF1F1FA9194F2FDF000320EF /* XCTest.framework */; };
+		DF1F1FAB194F2FDF000320EF /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DF1F1F90194F2FDF000320EF /* Foundation.framework */; };
+		DF1F1FAC194F2FDF000320EF /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DF1F1F94194F2FDF000320EF /* UIKit.framework */; };
+		DF1F1FB4194F2FDF000320EF /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = DF1F1FB2194F2FDF000320EF /* InfoPlist.strings */; };
+		DF1F1FB6194F2FDF000320EF /* ios_gifferTests.m in Sources */ = {isa = PBXBuildFile; fileRef = DF1F1FB5194F2FDF000320EF /* ios_gifferTests.m */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		DF1F1FAD194F2FDF000320EF /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = DF1F1F85194F2FDF000320EF /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = DF1F1F8C194F2FDF000320EF;
+			remoteInfo = "ios-giffer";
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		DF1F1F8D194F2FDF000320EF /* ios-giffer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "ios-giffer.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		DF1F1F90194F2FDF000320EF /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		DF1F1F92194F2FDF000320EF /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
+		DF1F1F94194F2FDF000320EF /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
+		DF1F1F98194F2FDF000320EF /* ios-giffer-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "ios-giffer-Info.plist"; sourceTree = "<group>"; };
+		DF1F1F9A194F2FDF000320EF /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		DF1F1F9C194F2FDF000320EF /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		DF1F1F9E194F2FDF000320EF /* ios-giffer-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "ios-giffer-Prefix.pch"; sourceTree = "<group>"; };
+		DF1F1F9F194F2FDF000320EF /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
+		DF1F1FA0194F2FDF000320EF /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
+		DF1F1FA2194F2FDF000320EF /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
+		DF1F1FA8194F2FDF000320EF /* ios-gifferTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "ios-gifferTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		DF1F1FA9194F2FDF000320EF /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
+		DF1F1FB1194F2FDF000320EF /* ios-gifferTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "ios-gifferTests-Info.plist"; sourceTree = "<group>"; };
+		DF1F1FB3194F2FDF000320EF /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		DF1F1FB5194F2FDF000320EF /* ios_gifferTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ios_gifferTests.m; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		DF1F1F8A194F2FDF000320EF /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				DF1F1F93194F2FDF000320EF /* CoreGraphics.framework in Frameworks */,
+				DF1F1F95194F2FDF000320EF /* UIKit.framework in Frameworks */,
+				DF1F1F91194F2FDF000320EF /* Foundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		DF1F1FA5194F2FDF000320EF /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				DF1F1FAA194F2FDF000320EF /* XCTest.framework in Frameworks */,
+				DF1F1FAC194F2FDF000320EF /* UIKit.framework in Frameworks */,
+				DF1F1FAB194F2FDF000320EF /* Foundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		DF1F1F84194F2FDF000320EF = {
+			isa = PBXGroup;
+			children = (
+				DF1F1F96194F2FDF000320EF /* ios-giffer */,
+				DF1F1FAF194F2FDF000320EF /* ios-gifferTests */,
+				DF1F1F8F194F2FDF000320EF /* Frameworks */,
+				DF1F1F8E194F2FDF000320EF /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		DF1F1F8E194F2FDF000320EF /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				DF1F1F8D194F2FDF000320EF /* ios-giffer.app */,
+				DF1F1FA8194F2FDF000320EF /* ios-gifferTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		DF1F1F8F194F2FDF000320EF /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				DF1F1F90194F2FDF000320EF /* Foundation.framework */,
+				DF1F1F92194F2FDF000320EF /* CoreGraphics.framework */,
+				DF1F1F94194F2FDF000320EF /* UIKit.framework */,
+				DF1F1FA9194F2FDF000320EF /* XCTest.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		DF1F1F96194F2FDF000320EF /* ios-giffer */ = {
+			isa = PBXGroup;
+			children = (
+				DF1F1F9F194F2FDF000320EF /* AppDelegate.h */,
+				DF1F1FA0194F2FDF000320EF /* AppDelegate.m */,
+				DF1F1FA2194F2FDF000320EF /* Images.xcassets */,
+				DF1F1F97194F2FDF000320EF /* Supporting Files */,
+			);
+			path = "ios-giffer";
+			sourceTree = "<group>";
+		};
+		DF1F1F97194F2FDF000320EF /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				DF1F1F98194F2FDF000320EF /* ios-giffer-Info.plist */,
+				DF1F1F99194F2FDF000320EF /* InfoPlist.strings */,
+				DF1F1F9C194F2FDF000320EF /* main.m */,
+				DF1F1F9E194F2FDF000320EF /* ios-giffer-Prefix.pch */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		DF1F1FAF194F2FDF000320EF /* ios-gifferTests */ = {
+			isa = PBXGroup;
+			children = (
+				DF1F1FB5194F2FDF000320EF /* ios_gifferTests.m */,
+				DF1F1FB0194F2FDF000320EF /* Supporting Files */,
+			);
+			path = "ios-gifferTests";
+			sourceTree = "<group>";
+		};
+		DF1F1FB0194F2FDF000320EF /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				DF1F1FB1194F2FDF000320EF /* ios-gifferTests-Info.plist */,
+				DF1F1FB2194F2FDF000320EF /* InfoPlist.strings */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		DF1F1F8C194F2FDF000320EF /* ios-giffer */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = DF1F1FB9194F2FDF000320EF /* Build configuration list for PBXNativeTarget "ios-giffer" */;
+			buildPhases = (
+				DF1F1F89194F2FDF000320EF /* Sources */,
+				DF1F1F8A194F2FDF000320EF /* Frameworks */,
+				DF1F1F8B194F2FDF000320EF /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "ios-giffer";
+			productName = "ios-giffer";
+			productReference = DF1F1F8D194F2FDF000320EF /* ios-giffer.app */;
+			productType = "com.apple.product-type.application";
+		};
+		DF1F1FA7194F2FDF000320EF /* ios-gifferTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = DF1F1FBC194F2FDF000320EF /* Build configuration list for PBXNativeTarget "ios-gifferTests" */;
+			buildPhases = (
+				DF1F1FA4194F2FDF000320EF /* Sources */,
+				DF1F1FA5194F2FDF000320EF /* Frameworks */,
+				DF1F1FA6194F2FDF000320EF /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				DF1F1FAE194F2FDF000320EF /* PBXTargetDependency */,
+			);
+			name = "ios-gifferTests";
+			productName = "ios-gifferTests";
+			productReference = DF1F1FA8194F2FDF000320EF /* ios-gifferTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		DF1F1F85194F2FDF000320EF /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0510;
+				ORGANIZATIONNAME = "Terrible Labs";
+				TargetAttributes = {
+					DF1F1FA7194F2FDF000320EF = {
+						TestTargetID = DF1F1F8C194F2FDF000320EF;
+					};
+				};
+			};
+			buildConfigurationList = DF1F1F88194F2FDF000320EF /* Build configuration list for PBXProject "ios-giffer" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = DF1F1F84194F2FDF000320EF;
+			productRefGroup = DF1F1F8E194F2FDF000320EF /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				DF1F1F8C194F2FDF000320EF /* ios-giffer */,
+				DF1F1FA7194F2FDF000320EF /* ios-gifferTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		DF1F1F8B194F2FDF000320EF /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				DF1F1F9B194F2FDF000320EF /* InfoPlist.strings in Resources */,
+				DF1F1FA3194F2FDF000320EF /* Images.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		DF1F1FA6194F2FDF000320EF /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				DF1F1FB4194F2FDF000320EF /* InfoPlist.strings in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		DF1F1F89194F2FDF000320EF /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				DF1F1FA1194F2FDF000320EF /* AppDelegate.m in Sources */,
+				DF1F1F9D194F2FDF000320EF /* main.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		DF1F1FA4194F2FDF000320EF /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				DF1F1FB6194F2FDF000320EF /* ios_gifferTests.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		DF1F1FAE194F2FDF000320EF /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = DF1F1F8C194F2FDF000320EF /* ios-giffer */;
+			targetProxy = DF1F1FAD194F2FDF000320EF /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		DF1F1F99194F2FDF000320EF /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				DF1F1F9A194F2FDF000320EF /* en */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+		DF1F1FB2194F2FDF000320EF /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				DF1F1FB3194F2FDF000320EF /* en */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		DF1F1FB7194F2FDF000320EF /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.1;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		DF1F1FB8194F2FDF000320EF /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = YES;
+				ENABLE_NS_ASSERTIONS = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.1;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		DF1F1FBA194F2FDF000320EF /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "ios-giffer/ios-giffer-Prefix.pch";
+				INFOPLIST_FILE = "ios-giffer/ios-giffer-Info.plist";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = app;
+			};
+			name = Debug;
+		};
+		DF1F1FBB194F2FDF000320EF /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "ios-giffer/ios-giffer-Prefix.pch";
+				INFOPLIST_FILE = "ios-giffer/ios-giffer-Info.plist";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = app;
+			};
+			name = Release;
+		};
+		DF1F1FBD194F2FDF000320EF /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/ios-giffer.app/ios-giffer";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(SDKROOT)/Developer/Library/Frameworks",
+					"$(inherited)",
+					"$(DEVELOPER_FRAMEWORKS_DIR)",
+				);
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "ios-giffer/ios-giffer-Prefix.pch";
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				INFOPLIST_FILE = "ios-gifferTests/ios-gifferTests-Info.plist";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUNDLE_LOADER)";
+				WRAPPER_EXTENSION = xctest;
+			};
+			name = Debug;
+		};
+		DF1F1FBE194F2FDF000320EF /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/ios-giffer.app/ios-giffer";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(SDKROOT)/Developer/Library/Frameworks",
+					"$(inherited)",
+					"$(DEVELOPER_FRAMEWORKS_DIR)",
+				);
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "ios-giffer/ios-giffer-Prefix.pch";
+				INFOPLIST_FILE = "ios-gifferTests/ios-gifferTests-Info.plist";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUNDLE_LOADER)";
+				WRAPPER_EXTENSION = xctest;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		DF1F1F88194F2FDF000320EF /* Build configuration list for PBXProject "ios-giffer" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				DF1F1FB7194F2FDF000320EF /* Debug */,
+				DF1F1FB8194F2FDF000320EF /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		DF1F1FB9194F2FDF000320EF /* Build configuration list for PBXNativeTarget "ios-giffer" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				DF1F1FBA194F2FDF000320EF /* Debug */,
+				DF1F1FBB194F2FDF000320EF /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
+		DF1F1FBC194F2FDF000320EF /* Build configuration list for PBXNativeTarget "ios-gifferTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				DF1F1FBD194F2FDF000320EF /* Debug */,
+				DF1F1FBE194F2FDF000320EF /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = DF1F1F85194F2FDF000320EF /* Project object */;
+}
