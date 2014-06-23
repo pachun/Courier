@@ -1,5 +1,14 @@
 describe "The Core Data Schema Description Class" do
   before do
+    Courier::nuke.everything.right.now
+
+    if Object.constants.include?(:Person)
+      Object.send(:remove_const, :Person)
+    end
+    if Object.constants.include?(:Toy)
+      Object.send(:remove_const, :Toy)
+    end
+
     class Person < CoreData::Model; end
     class Toy < CoreData::Model; end
 

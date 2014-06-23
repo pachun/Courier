@@ -4,7 +4,7 @@ describe "The Courier Scope Module" do
   it "defines .where(:attr, is: value)" do
     predicate = Courier::Scope.where(:name, is: "Nick")
     predicate.class.should == NSComparisonPredicate
-    predicate.predicateFormat.should == "name == Nick"
+    predicate.predicateFormat.should == "name == \"Nick\""
   end
 
   it "defines .where(:attr, is_greater_than: value)" do
@@ -98,7 +98,7 @@ describe "The Courier Scope Module" do
 
   it "defines .from_string('attribute is value')" do
     scope = Courier::Scope.from_string("name is nick")
-    scope.predicateFormat.should == "name == nick"
+    scope.predicateFormat.should == "name == \"nick\""
   end
 
   it "defines .from_string('attribute > value')" do
