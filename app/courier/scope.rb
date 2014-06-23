@@ -54,11 +54,11 @@ module Courier
       NSPredicate.predicateWithFormat("#{attribute} IN #{options}")
     end
 
-    def self.and(*predicates)
+    def self.and(predicates)
       NSCompoundPredicate.andPredicateWithSubpredicates(predicates)
     end
 
-    def self.or(*predicates)
+    def self.or(predicates)
       NSCompoundPredicate.orPredicateWithSubpredicates(predicates)
     end
 
@@ -111,7 +111,8 @@ module Courier
         return self.from_string(s)
       elsif s.class == {}.class
         if s.keys.first == :and
-          return self.and( s[:and].map{ |p| self.from_structure(p)} )
+          subpredicates = s[:and].map{ |p| self.from_structure(p) }
+          return self.and( subpredicates )
         elsif s.keys.first == :or
           return self.or( s[:or].map{ |p| self.from_structure(p)} )
         elsif s.keys.first == :inverse

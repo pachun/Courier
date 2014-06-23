@@ -9,7 +9,6 @@ rescue LoadError
 end
 
 require 'motion-support/inflector'
-require 'webstub'
 
 Motion::Project::App.setup do |app|
   # Use `rake config' to see complete project settings.
