@@ -1,4 +1,4 @@
-describe "Courier Named Scopes" do
+describe "A courier Named Scope" do
   before do
 
     # clean out last test's db
@@ -7,15 +7,9 @@ describe "Courier Named Scopes" do
       Object.send(:remove_const, :Person)
     end
 
-    # restore fresh db
-    class Person < Courier::Base
-      property :id, Integer64
-      property :age, Integer16
-      property :name, String
-    end
-    Courier::Courier.instance.parcels = [Person]
-
     # fixture data
+    @old_age = 50
+    @young_age = 30
     @people =
       [
         {name:"Nick",age:22},
@@ -25,10 +19,30 @@ describe "Courier Named Scopes" do
         {name:"Joe", age:30},
         {name:"Jeremy",age:34},
         {name:"Mike", age:40},
-        {name:"Father Time",age:78},
+        {name:"Mike's Dad",age:78},
       ]
-    @old_age = 50
-    @young_age = 30
+
+    # restore fresh db
+    @amazing_scope = {
+      or: [
+            {and: ["age > 30", "age < 50"]},
+            "name is Nick",
+      ]
+    }
+
+    class Person < Courier::Base
+      property :id, Integer64
+      property :age, Integer16
+      property :name, String
+      scope :old, "age > 50"
+      scope :middle_aged, and: ["age > 30", "age < 50"]
+      scope :middle_aged_or_amazing, {
+        or: [
+              {and: ["age > 30", "age < 50"]},
+              "name is Nick",
+        ]}
+    end
+    Courier::Courier.instance.parcels = [Person]
 
     # save fixtures
     @people.each_with_index do |d, i|
@@ -41,7 +55,7 @@ describe "Courier Named Scopes" do
     Courier::Courier.instance.save
   end
 
-  it "Work with NSComparisonPredicates" do
+  it "works with NSComparisonPredicates" do
     old_people_scope = Courier::Scope.where(:age, is_greater_than_or_equal_to: @old_age)
     Person.where( old_people_scope ).count.should == \
       @people.select{ |p| p[:age] >= @old_age }.count
@@ -53,9 +67,9 @@ describe "Courier Named Scopes" do
       @people.select{ |p| p[:age] >= @old_age }.count
   end
 
-  it "Work with NSCompoundPredicates" do
-    not_young_predicate = NSPredicate.predicateWithFormat("age > #{@young_age}")
-    not_old_predicate = NSPredicate.predicateWithFormat("age < #{@old_age}")
+  it "works with NSCompoundPredicates" do
+    not_young_predicate = Courier::Scope.where(:age, is_greater_than: @young_age)
+    not_old_predicate = Courier::Scope.where(:age, is_less_than: @old_age)
 
     middle_aged = [
       not_young_predicate,
@@ -67,6 +81,27 @@ describe "Courier Named Scopes" do
     fetch.setPredicate(middle_aged_predicate)
     error = Pointer.new(:object)
     results = Courier::Courier.instance.contexts[:main].executeFetchRequest(fetch, error:error)
-    results.count.should == @people.select{ |p| p[:age] > @young_age && p[:age] < @old_age }.count
+    results.count.should == \
+      @people.select{ |p| p[:age] > @young_age && p[:age] < @old_age }.count
+  end
+
+  it "works in string form with a single predicate" do
+    old_people = Person.old
+    old_people.count.should == \
+      @people.select{ |p| p[:age] > @old_age }.count
+  end
+
+  it "works in string form with a mutliple predicates" do
+    old_people = Person.middle_aged
+    old_people.count.should == \
+      @people.select{ |p| p[:age] > @young_age && p[:age] < @old_age }.count
+  end
+
+  it "works with more complex nestings of predicates" do
+    some_people = Person.middle_aged_or_amazing
+    some_people.count.should == \
+      @people.select do |p|
+        (p[:age] > @young_age && p[:age] < @old_age) || p[:name] == "Nick"
+      end.count
   end
 end

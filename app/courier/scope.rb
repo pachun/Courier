@@ -1,7 +1,11 @@
 module Courier
   module Scope
     def self.where(attribute, is: value)
-      NSPredicate.predicateWithFormat("#{attribute} == #{value}")
+      if value.class == String
+        NSPredicate.predicateWithFormat("#{attribute} == \"#{value}\"")
+      else
+        NSPredicate.predicateWithFormat("#{attribute} == #{value}")
+      end
     end
 
     def self.where(attribute, is_greater_than: value)
@@ -72,7 +76,7 @@ module Courier
       comparison = parts[1]
       value = parts[2..-1].join(" ")
       case(comparison)
-      when "is"
+      when "is" || "=" || "=="
         self.where(attribute, is:value)
       when ">"
         self.where(attribute, is_greater_than:value)
