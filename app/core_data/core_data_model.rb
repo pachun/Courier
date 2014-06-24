@@ -7,7 +7,7 @@ module CoreData
       entities.select{ |e| e.model == self.to_s }.first
     end
 
-    def self.all(context)
+    def self.all_in_context(context)
       error = Pointer.new(:object)
       query = NSFetchRequest.new
       query.entity = model_definition(context)

@@ -5,7 +5,7 @@
 # end
 
 class Post < Courier::Base
-  property :id, Integer32
+  property :id, Integer32, key: true
   property :user_id, Integer32
   property :title, String
   property :body, String
@@ -18,11 +18,36 @@ end
 class AppDelegate
   def application(_, didFinishLaunchingWithOptions:_)
     return true if RUBYMOTION_ENV == "test"
-    Courier::nuke.everything.right.now
+    # Courier::nuke.everything.right.now
+    #
+    # @c = Courier::Courier.instance
+    # @c.url = "http://jsonplaceholder.typicode.com"
+    # @c.parcels = [Post]
+    #
+    # p = Post.create
+    # p.id = 4
+    # p.fetch do |fp|
+    #   puts "fp is #{fp.inspect}"
+    #   fp.true_class.properties.each do |pr|
+    #     val = fp.send("#{pr.name}")
+    #     puts "  #{pr.name} = #{val}"
+    #   end
+    #
+    #   fp.merge_if { false }
+    #   puts "p is #{p.inspect}"
+    #   p.true_class.properties.each do |pr|
+    #     val = p.send("#{pr.name}")
+    #     puts "  #{pr.name} = #{val}"
+    #   end
+    # end
 
-    @c = Courier::Courier.instance
-    @c.url = "http://jsonplaceholder.typicode.com"
-    @c.parcels = [Post]
+    # puts "fetch was #{p.fetch!}"
+    # NSThread.sleepForTimeInterval(1.0)
+    # puts "p is #{p.inspect}"
+    # p.true_class.properties.each do |pr|
+    #   val = p.send("#{pr.name}")
+    #   puts "  #{pr.name} = #{val}"
+    # end
 
     # p = Post.create
     # p.id = 4
@@ -33,10 +58,7 @@ class AppDelegate
     #   puts "x is #{x}"
     # end
     # puts "1 locked? #{@c.locked?}"
-    # true
 
-    Post.fetch_all do
-      puts "posts: #{Post.all.map{|p|p.title}.inspect}"
-    end
+    true
   end
 end

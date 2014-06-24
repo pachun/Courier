@@ -24,12 +24,12 @@ describe "A Core Data Model Instance" do
       Person.model_definition(@context).should == @person_model_definition
     end
 
-    it "has an .all(context) method to get all instances" do
+    it "has a .all_in_context(context) method to get all instances" do
       second_person = @context.create(Person)
       third_person = @context.create(Person)
       # @context.save # fetches all; saved or unsaved
       lambda do
-        people = Person.all(@context)
+        people = Person.all_in_context(@context)
         people.count.should == 3
         people.should.include(@person_model)
         people.should.include(second_person)

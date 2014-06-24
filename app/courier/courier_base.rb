@@ -120,14 +120,26 @@ module Courier
     end
 
     def delete
-      Courier.instance.contexts[:main].deleteObject(self)
+      context.deleteObject(self)
+    end
+
+    def delete!
+      delete
+      Courier.instance.contexts.delete_if do |key, value|
+        value == context
+      end
     end
 
     #
-    # Here on are scoping helpers (also there is an nsarray hack in another file)
+    # Scoping helpers (also there is an nsarray hack in another file)
     #
+
+    def self.all_in_context(context)
+      super(context)
+    end
+
     def self.all
-      super(Courier.instance.contexts[:main])
+      all_in_context(Courier.instance.contexts[:main])
     end
 
     def true_class
@@ -212,22 +224,72 @@ module Courier
       block.call(fetched_resource)
     end
 
-    # single resource "hard" fetch
-
-    def fetch!(&block)
-      AFMotion::HTTP.get(individual_url) do |result|
-        if result.success?
-          _save_single_resource_in_same_context(result.object, &block)
-        else
-          puts "error while fetching #{self.class.to_s.downcase} resource: #{result.error.localizedDescription}"
+    def main_context_match
+      primary_keys = true_class.keys
+      search_scopes = []
+      primary_keys.each do |key|
+        local_key_value = send("#{key}")
+        unless local_key_value.nil?
+          search_scopes << Scope.where(key.to_sym, is: local_key_value)
         end
+      end
+
+      if search_scopes.count == 0
+        nil
+      elsif search_scopes.count == 1
+        true_class.where(search_scopes[0]).first
+      else
+        true_class.where(Scope.and(search_scopes)).first
       end
     end
 
-    def _save_single_resource_in_same_context(json, &block)
-      true_class.save_json(json, to:self)
-      block.call
+    # single resource "hard" fetch
+
+    def fetch!
+      fetch do |foreign_resource|
+        foreign_resource.merge!
+      end
     end
+
+    # single resource merge (for merging into main context)
+
+    def merge!
+      counterpart = main_context_match
+      if counterpart != nil
+        true_class.properties.each do |p|
+          counterpart.send("#{p.name}=", send("#{p.name}"))
+        end
+        delete!
+        true
+      else
+        false
+      end
+    end
+
+    def merge_if(&block)
+      if block.call
+        merge!
+      else
+        false
+      end
+    end
+
+    # single resource "hard" fetch
+
+    # def fetch!(&block)
+    #   AFMotion::HTTP.get(individual_url) do |result|
+    #     if result.success?
+    #       _save_single_resource_in_same_context(result.object, &block)
+    #     else
+    #       puts "error while fetching #{self.class.to_s.downcase} resource: #{result.error.localizedDescription}"
+    #     end
+    #   end
+    # end
+    #
+    # def _save_single_resource_in_same_context(json, &block)
+    #   true_class.save_json(json, to:self)
+    #   block.call
+    # end
 
     # single resource post
 
@@ -238,7 +300,7 @@ module Courier
     end
 
     #
-    # old, deprecated when bubble-wrap dropped support for it's http module
+    # old, deprecated when bubble-wrap dropped support for its http module
     #
     # def fetch(&block)
     #   Courier.instance.lock_with(NSThread.currentThread)
