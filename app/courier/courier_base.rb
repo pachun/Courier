@@ -274,23 +274,6 @@ module Courier
       end
     end
 
-    # single resource "hard" fetch
-
-    # def fetch!(&block)
-    #   AFMotion::HTTP.get(individual_url) do |result|
-    #     if result.success?
-    #       _save_single_resource_in_same_context(result.object, &block)
-    #     else
-    #       puts "error while fetching #{self.class.to_s.downcase} resource: #{result.error.localizedDescription}"
-    #     end
-    #   end
-    # end
-    #
-    # def _save_single_resource_in_same_context(json, &block)
-    #   true_class.save_json(json, to:self)
-    #   block.call
-    # end
-
     # single resource post
 
     def push(&block)
