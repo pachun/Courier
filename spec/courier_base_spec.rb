@@ -39,7 +39,7 @@ describe "The Courier Base Class" do
     end
 
     Courier::Courier.instance.parcels = [Keyboard, Key, Marking]
-    Courier::Courier.instance.url = "xyz.com/"
+    Courier::Courier.instance.url = "xyz.com"
   end
 
   it "correctly calculates an instances individual URL (accounting for potential trailing slash on the base url" do
