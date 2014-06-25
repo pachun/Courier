@@ -270,9 +270,10 @@ module Courier
 
     # single resource "hard" fetch
 
-    def fetch!
+    def fetch!(&block)
       fetch do |foreign_resource|
         foreign_resource.merge!
+        block.call
       end
     end
 
