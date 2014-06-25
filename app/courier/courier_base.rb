@@ -308,33 +308,7 @@ module Courier
       end
     end
 
-    #
-    # old, deprecated when bubble-wrap dropped support for its http module
-    #
-    # def fetch(&block)
-    #   Courier.instance.lock_with(NSThread.currentThread)
-    #   BW::HTTP.get(resolve_url) do |response|
-    #     true_class.save_json(BW::JSON.parse(response.body), to:self) if response.ok?
-    #     Courier.instance.unlock_with(NSThread.currentThread)
-    #     block.call if block
-    #   end
-    # end
-    #
-    # def self.fetch_all(&block)
-    #   Courier.instance.lock_with(NSThread.currentThread)
-    #   url = Courier.instance.url + "/" + @@collection_path
-    #   BW::HTTP.get(url) do |response|
-    #     if response.ok?
-    #       json = BW::JSON.parse(response.body)
-    #       json.each do |current|
-    #         instance = self.create
-    #         save_json(current, to:instance)
-    #       end
-    #     end
-    #     Courier.instance.unlock_with(NSThread.currentThread)
-    #     block.call if block
-    #   end
-    # end
+    # helpful methods for foreign resource syncing
 
     def self.save_json(json, to:instance)
       json_to_local.keys.each do |json_key|
