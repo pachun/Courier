@@ -206,6 +206,31 @@ module Courier
       @@json_to_local
     end
 
+    # group resource fetch
+
+    def self.fetch(&block)
+      AFMotion::HTTP.get(collection) do |result|
+        if result.success?
+          _compare_local_collection_to_fetched_collection(results.body, &block)
+        else
+          puts "error while fetched collection of #{self.to_s.pluralize}: #{results.error.localizedDescription}"
+        end
+      end
+    end
+
+    def self._compare_local_collection_to_fetched_collection(json, &block)
+      block.call( curate_conflicts(json) )
+    end
+
+    def self.curate_conflicts(json)
+      conflicts = json.map do |single_resource_json|
+        new_local_resource = create_in_new_context
+        save_json(single_resource_json, to: new_local_resource)
+        old_local_resource = new_local_resource.main_context_match
+        {old: old_local_resource, new: new_local_resource}
+      end
+    end
+
     # single resource "soft" fetch
 
     def fetch(&block)
@@ -328,7 +353,11 @@ module Courier
             peice
           end
         end.join("/")
-        [Courier.instance.url, handle].join("/").split("//").join("/")
+        [Courier.instance.url, handle].join("/")
+    end
+
+    def self.collection_url
+      [Courier.instance.url, collection_path].join("/")
     end
 
     # self.json_to_local = {id: :id, userId: :user_id, title: :title, body: :body}#@json_to_local_hash

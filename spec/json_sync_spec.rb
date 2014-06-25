@@ -38,6 +38,14 @@ describe "The Courier Base Class' JSON resource syncing functionality" do
     Post.json_to_local.should == {id: :id, userId: :user_id, title: :title, body: :body}
   end
 
+  it "resolves the individual url of a resource correctly" do
+    @post.individual_url.should == "http://jsonplaceholder.typicode.com/posts/4"
+  end
+
+  it "resolves the collection url of a resource correctly" do
+    Post.collection_url.should == "http://jsonplaceholder.typicode.com/posts"
+  end
+
   it "soft .fetch's individual resources in a different context" do
     prior_num_contexts = @c.contexts.count
     @post._save_single_resource_in_new_context(@post_json) do |fetched_resource|
@@ -137,6 +145,24 @@ describe "The Courier Base Class' JSON resource syncing functionality" do
     @post.post_parameters.should == {id: 4, userId: 10}
     @post.title = "Hello World"
     @post.post_parameters.should == {id: 4, userId: 10, title: "Hello World"}
+  end
+
+  it "provides ResourceClassName.fetch{ |conflicts| }" do
+    local_post1 = @post.tap{ |lp1| lp1.id = 1; lp1.title = "LP1"}
+    local_post2 = Post.create.tap{ |lp2| lp2.id = 2; lp2.title = "LP2 Title"}
+    foreign_post2 = {"id" => 2, "title" => "FP2 Title"}
+    foreign_post3 = {"id" => 3, "title" => "FP3 Title"}
+    pretend_json = [foreign_post2, foreign_post3]
+    Post._compare_local_collection_to_fetched_collection(pretend_json) do |conflicts|
+      conflicts.class.should == [].class
+      conflicts.count.should == 2
+      conflicts.first[:old].should == local_post2
+      conflicts.first[:new].id.should == foreign_post2["id"]
+      conflicts.first[:new].title.should == foreign_post2["title"]
+      conflicts.last[:old].should == nil
+      conflicts.last[:new].id.should == foreign_post3["id"]
+      conflicts.last[:new].title.should == foreign_post3["title"]
+    end
   end
 
   # it translates key: :default to an integer increment that auto assigns 0,1,2,3,4
