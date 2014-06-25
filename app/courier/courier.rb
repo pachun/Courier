@@ -63,8 +63,8 @@ module Courier
     end
 
     def new_context
-      context_name = "context_" + @contexts.keys.count.to_s
-      @contexts[@context_name] = CoreData::Context.new.tap do |context|
+      context_name = "context_" + (0...32).map{ (65+rand(26)).chr }.join
+      @contexts[context_name] = CoreData::Context.new.tap do |context|
         context.store_coordinator = @store_coordinator
       end
     end

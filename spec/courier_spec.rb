@@ -1,25 +1,35 @@
 describe "The Courier Class" do
-  behaves_like "A Core Data Spec"
-
   before do
+    Object.send(:remove_const, :Cup) if Object.constants.include?(:Cup)
+    Object.send(:remove_const, :Plate) if Object.constants.include?(:Plate)
+    Courier::nuke.everything.right.now
     class Cup < Courier::Base; end
     class Plate < Courier::Base; end
+    @courier = Courier::Courier.instance
+    @courier.parcels = [Cup, Plate]
   end
 
   it "defines a singleton reachable at .instance" do
-    Courier::Courier.instance.class.should == Courier::Courier
-    Courier::Courier.instance.should == Courier::Courier.instance
+    @courier.class.should == Courier::Courier
   end
 
   it "builds a schema and create a main context when .parcels=[m1,m2,etx] are set" do
-    courier = Courier::Courier.instance
-    courier.parcels = [Cup, Plate]
-    courier.contexts[:main].class.should == CoreData::Context
+    @courier.contexts[:main].class.should == CoreData::Context
   end
 
   it "keeps track of a url for fetching remote resources" do
-    Courier::Courier.instance.url = "pachulski.me"
-    Courier::Courier.instance.url.should == "pachulski.me"
+    url = "pachulski.me"
+    @courier.url = url
+    @courier.url.should == url
+  end
+
+  it "avoids naming collisions among context keys in the contexts hash" do
+    p1 = Plate.create_in_new_context
+    p2 = Plate.create_in_new_context
+    @courier.contexts.keys.count.should == 3
+    p1.delete!
+    p3 = Plate.create_in_new_context
+    @courier.contexts.count.should == 3
   end
 
   # it "deletes all the /documents on .nuke.everything.right.now" do
