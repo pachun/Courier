@@ -39,13 +39,13 @@ describe "The Courier Base Class" do
     end
 
     Courier::Courier.instance.parcels = [Keyboard, Key, Marking]
-    Courier::Courier.instance.url = "xyz.com"
+    Courier::Courier.instance.url = "http://xyz.com"
   end
 
-  it "correctly calculates an instances individual URL (accounting for potential trailing slash on the base url" do
+  it "correctly calculates an instances individual URL" do
     k = Keyboard.create
     k.brand = "Das"
-    k.individual_url.should == "xyz.com/keyboards/Das"
+    k.individual_url.should == "http://xyz.com/keyboards/Das"
   end
 
   it "is a descendant of CoreData::Model" do
