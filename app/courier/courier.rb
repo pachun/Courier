@@ -4,27 +4,11 @@ module Courier
   MigrationLogSaveName = "migrations.log"
 
   class Courier
-    attr_reader :migrator, :locks
+    attr_reader :migrator
     attr_accessor :url
 
     def self.instance
       @@instance ||= new
-    end
-
-    def initialize
-      @locks = []
-    end
-
-    def locked?
-      locks.count > 0
-    end
-
-    def lock_with(thread)
-      @locks << thread
-    end
-
-    def unlock_with(thread)
-      @locks.delete(thread)
     end
 
     def parcels=(parcels)
@@ -37,30 +21,6 @@ module Courier
     end
 
     def save
-      if locked?
-        false
-      else
-        @contexts[:main].save
-        true
-      end
-    end
-
-    def migrate(msg = "")
-      if @migrator.migrate_from(@persisted_schema, to:@schema)
-        @schema.version = @persisted_schema.version + 1
-        persist_schema
-        log_schema(msg)
-      end
-      sync_schema_with_store
-    end
-
-    def last_schema
-      puts @migrator.logs.last[:description]
-    end
-
-    def new_schema
-      puts CoreData::SchemaDescription.new(@schema).describe
-    end
 
     def new_context
       context_name = "context_" + (0...32).map{ (65+rand(26)).chr }.join
