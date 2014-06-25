@@ -1,5 +1,5 @@
 describe "A Core Data StoreCoordinator Constructor" do
-  behaves_like "A Core Data Spec"
+  Courier::nuke.everything.right.now
 
   it "aliases .alloc.initWithManagedObjectModel(schema) to .new(schema)" do
     schema = CoreData::Schema.new
@@ -29,8 +29,11 @@ describe "A Core Data StoreCoordinator Constructor" do
       end.should.not.raise(StandardError)
     end
 
-    it "creates stores with .add_store_named(\"default\")" do
-      @store_coordinator.add_store_named("default")
+    it "creates stores with .add_store_at( some_url_ending_in.sqlite )" do
+      app_documents_url = NSFileManager.defaultManager.URLsForDirectory(NSDocumentDirectory, inDomains:NSUserDomainMask).last
+      courier_directory_url = app_documents_url.URLByAppendingPathComponent(Courier::StoreCoordinator::DIRECTORY)
+      store_url = courier_directory_url.URLByAppendingPathComponent("some_store.sqlite")
+      @store_coordinator.add_store_at(store_url)
       @store_coordinator.stores.count.should == 1
     end
   end

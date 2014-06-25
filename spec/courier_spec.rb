@@ -13,8 +13,21 @@ describe "The Courier Class" do
     @courier.class.should == Courier::Courier
   end
 
-  it "builds a schema and create a main context when .parcels=[m1,m2,etx] are set" do
+  it "builds a schema and create a main context when parcels are set" do
     @courier.contexts[:main].class.should == CoreData::Context
+  end
+
+  it "builds a store when parcels are set" do
+    app_documents_url = NSFileManager.defaultManager.URLsForDirectory(NSDocumentDirectory, inDomains:NSUserDomainMask).last
+    courier_directory_url = app_documents_url.URLByAppendingPathComponent(Courier::StoreCoordinator::DIRECTORY)
+    courier_store_url = courier_directory_url.URLByAppendingPathComponent(Courier::StoreCoordinator::STORE_NAME)
+
+    NSFileManager.defaultManager.fileExistsAtPath(courier_directory_url.path).should == true
+    NSFileManager.defaultManager.fileExistsAtPath(courier_store_url.path).should == true
+  end
+
+  it "assigns the main context a store coordinator when parcels are set" do
+    Courier::Courier.instance.contexts[:main].store_coordinator.class.should == Courier::StoreCoordinator
   end
 
   it "keeps track of a url for fetching remote resources" do

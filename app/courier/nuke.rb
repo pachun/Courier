@@ -24,10 +24,12 @@ module Courier
   class Right
     def self.now
       file_manager = NSFileManager.defaultManager
-      app_documents_path = file_manager.URLsForDirectory(NSDocumentDirectory, inDomains:NSUserDomainMask).last.path
-      file_paths = file_manager.contentsOfDirectoryAtPath(app_documents_path, error:nil)
-      file_paths.each do |path|
-        file_manager.removeItemAtPath(app_documents_path.stringByAppendingPathComponent(path), error:nil)
+      courier_documents_path = file_manager.URLsForDirectory(NSDocumentDirectory, inDomains:NSUserDomainMask).last.URLByAppendingPathComponent(StoreCoordinator::DIRECTORY).path
+      file_paths = file_manager.contentsOfDirectoryAtPath(courier_documents_path, error:nil)
+      unless file_paths.nil?
+        file_paths.each do |path|
+          file_manager.removeItemAtPath(courier_documents_path.stringByAppendingPathComponent(path), error:nil)
+        end
       end
       true
     end

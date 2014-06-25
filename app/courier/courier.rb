@@ -20,8 +20,33 @@ module Courier
       @contexts
     end
 
+    def new_context
+      context_name = "context_" + (0...32).map{ (65+rand(26)).chr }.join
+      @contexts[context_name] = CoreData::Context.new.tap do |context|
+        context.store_coordinator = @store_coordinator
+      end
+    end
+
     def save
       @contexts[:main].save
+    end
+
+    def build_all
+      build_schema
+      sync_schema_with_store
+    end
+
+    def build_schema
+      @schema = CoreData::Schema.new
+      @schema.entities = @parcels.map{ |p| p.to_coredata }
+      InverseRelationships.connect(@schema)
+    end
+
+    def sync_schema_with_store
+      @store_coordinator = StoreCoordinator.new(@schema)
+      @store_coordinator.build
+      @contexts = {main: CoreData::Context.new}
+      @contexts[:main].store_coordinator = @store_coordinator
     end
 
     # def migrate(msg = "")
@@ -41,24 +66,17 @@ module Courier
     #   puts CoreData::SchemaDescription.new(@schema).describe
     # end
 
-    def new_context
-      context_name = "context_" + (0...32).map{ (65+rand(26)).chr }.join
-      @contexts[context_name] = CoreData::Context.new.tap do |context|
-        context.store_coordinator = @store_coordinator
-      end
-    end
-
     private
 
-    def build_all
-      build_schema
-      # if persisted_schema_exists?
-      #   return if resolve_schema_differences == :asking_to_migrate
-      # else
-      #   persist_built_schema
-      # end
-      sync_schema_with_store
-    end
+    # def build_all
+    #   build_schema
+    #   # if persisted_schema_exists?
+    #   #   return if resolve_schema_differences == :asking_to_migrate
+    #   # else
+    #   #   persist_built_schema
+    #   # end
+    #   sync_schema_with_store
+    # end
 
     # def persist_built_schema
     #   @schema.version = 1
@@ -89,12 +107,12 @@ module Courier
     #   schema_description.save(SchemaSaveName)
     # end
 
-    def sync_schema_with_store
-      @store_coordinator = CoreData::StoreCoordinator.new(@schema)
-      @store_coordinator.add_store_named(CourierDatabaseName + @schema.version.to_s) #courier1, courier2, etc (.sqlite is appended by store_coordinator)
-      @contexts = {main: CoreData::Context.new}
-      @contexts[:main].store_coordinator = @store_coordinator
-    end
+    # def sync_schema_with_store
+    #   @store_coordinator = CoreData::StoreCoordinator.new(@schema)
+    #   @store_coordinator.add_store_named(CourierDatabaseName + @schema.version.to_s) #courier1, courier2, etc (.sqlite is appended by store_coordinator)
+    #   @contexts = {main: CoreData::Context.new}
+    #   @contexts[:main].store_coordinator = @store_coordinator
+    # end
 
     # def persisted_schema_exists?
     #   NSFileManager.defaultManager.fileExistsAtPath(Packager.URL(SchemaSaveName).path)
@@ -107,11 +125,5 @@ module Courier
     # def delete_persisted_schema
     #   NSFileManager.defaultManager.removeItemAtPath(Packager.URL(SchemaSaveName).path, error:nil)
     # end
-
-    def build_schema
-      @schema = CoreData::Schema.new
-      @schema.entities = @parcels.map{ |p| p.to_coredata }
-      InverseRelationships.connect(@schema)
-    end
   end
 end
