@@ -147,7 +147,7 @@ describe "The Courier Base Class' JSON resource syncing functionality" do
     @post.post_parameters.should == {id: 4, userId: 10, title: "Hello World"}
   end
 
-  it "provides ResourceClassName.fetch{ |conflicts| }" do
+  it "provides ResourceClassName.fetch{ |conflicts| } for fetching collections and resolving conflicts" do
     local_post1 = @post.tap{ |lp1| lp1.id = 1; lp1.title = "LP1"}
     local_post2 = Post.create.tap{ |lp2| lp2.id = 2; lp2.title = "LP2 Title"}
     foreign_post2 = {"id" => 2, "title" => "FP2 Title"}
@@ -156,12 +156,12 @@ describe "The Courier Base Class' JSON resource syncing functionality" do
     Post._compare_local_collection_to_fetched_collection(pretend_json) do |conflicts|
       conflicts.class.should == [].class
       conflicts.count.should == 2
-      conflicts.first[:old].should == local_post2
-      conflicts.first[:new].id.should == foreign_post2["id"]
-      conflicts.first[:new].title.should == foreign_post2["title"]
-      conflicts.last[:old].should == nil
-      conflicts.last[:new].id.should == foreign_post3["id"]
-      conflicts.last[:new].title.should == foreign_post3["title"]
+      conflicts.first[:local].should == local_post2
+      conflicts.first[:foreign].id.should == foreign_post2["id"]
+      conflicts.first[:foreign].title.should == foreign_post2["title"]
+      conflicts.last[:local].should == nil
+      conflicts.last[:foreign].id.should == foreign_post3["id"]
+      conflicts.last[:foreign].title.should == foreign_post3["title"]
     end
   end
 

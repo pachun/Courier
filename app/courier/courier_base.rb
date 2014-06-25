@@ -223,11 +223,11 @@ module Courier
     end
 
     def self.curate_conflicts(json)
-      conflicts = json.map do |single_resource_json|
-        new_local_resource = create_in_new_context
-        save_json(single_resource_json, to: new_local_resource)
-        old_local_resource = new_local_resource.main_context_match
-        {old: old_local_resource, new: new_local_resource}
+      conflicts = json.map do |foreign_resource_json|
+        foreign_resource = create_in_new_context
+        save_json(foreign_resource_json, to: foreign_resource)
+        local_resource = foreign_resource.main_context_match
+        {local: local_resource, foreign: foreign_resource}
       end
     end
 
