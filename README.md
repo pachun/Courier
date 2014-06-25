@@ -15,7 +15,6 @@ Rakefile
 
 ```ruby
 require 'motion-support/inflector'
-require 'bubble-wrap/http'
 ```
 
 I'm having trouble automating that on gem inclusion. If anyone knows how, please
@@ -23,8 +22,7 @@ send me a pull request or take the time to let me know how -
 hello@nickpachulski.com.
 
 --
-###Models
-Here's a succinct illustration of most features:
+###Models Quickly
 
 ```ruby
 class League < Courier::Base
@@ -38,7 +36,7 @@ class Team < Courier::Base
   belongs_to :league, as: :league, on_delete: :nullify
   has_many :players, as: :players, on_delete: :nullify
 
-  property :id, Integer32, required: true
+  property :id, Integer32, required: true, key: true
   property :name, String
   property :location, String
 
@@ -63,22 +61,17 @@ end
 --
 ###Schema
 Defining the models doesn't implicitly define a schema (managed object model)
-for you. You have to tell Courier the names of the models. You use the singleton
-courier instance to do that.
+for you. You have to tell Courier the names of the models. You use the singleton instance's parcels=() to do that.
 
 ```ruby
-C = Courier::Courier.instance
-
 class AppDelegate
   def application(application, didFinishLaunchingWithOptions:launchOptions)
-    C.parcels = [League, Team, Player]
+    Courier::Courier.instance.parcels = [League, Team, Player]
     true
   end
 end
 ```
-I do this in my app delegate, so I can say C instead of
-Courier::Courier.instance from then on. You can also get a string description of
-the schema with .schema
+You can also get a string description of the schema with .schema
 ```ruby
 puts "#{Courier::Courier.instance.schema}"
 ```
@@ -86,25 +79,19 @@ puts "#{Courier::Courier.instance.schema}"
 
 --
 ###Tests
-If you're doing a lot of testing, you probably want to clear old tests data out
-and start with a fresh instance, or with some fixtures. There's a way to clear
-the schema and empty the database
+
+Every rspec test that wants to initialize a new schema should begin with the line
 
 ```ruby
 Courier::nuke.everything.right.now
 ```
-
-It's intentionally long so you don't type it by accident in a production app and
-lose your db. Anyway, throwing this in a before block is a good way to test core
-data with different schemas and clean slate databases. The courier_base_spec.rb
-has a good example of using this:
+This erases the old store completely.
 
 ```ruby
 describe "The Courier Base Class" do
   before do
     Courier::nuke.everything.right.now
-    Object.send(:remove_const, :Keyboard) if
-Object.constants.include?(:Keyboard)
+    Object.send(:remove_const, :Keyboard) if Object.constants.include?(:Keyboard)
 
     class Keyboard < Courier::Base; end
     Courier::Courier.instance.parcels = [Keyboard]
@@ -112,15 +99,10 @@ Object.constants.include?(:Keyboard)
 end
 ```
 
-Also of note, the remove_const lines. If you're declaring Courier::Base models
-in any block that'll be run twice, courier::base tries to re-register the class
-with core data, which will error because one by that name was already
-registered. If you delete the constant, it fixes the problem.
+If you're declaring Courier::Base models in any block that'll be run twice, during your test suite, courier::base tries to re-register the class with core data, which will error because one by that name was already registered. Therefor, you should delete the old class constant prior to your new class definition.
 
 --
 ### Fixtures
-There's nothing special courier gives you for fixtures, but they're easy to
-create.
 
 ```ruby
 class AppDelegate
@@ -150,33 +132,26 @@ method.
 --
 ###Create, Save, and Delete
 .create() will create a model instance, but it will not be persisted to
-subsequent app runs until .save() is called. You can call .save on the model
-itself, or on the Courier::Courier.instance. __Those both do the same thing.__
-.save() called on anything, saves every model .create()'d up to the point, eg:
-
+subsequent app runs. Calling .save() on the Courier singleton will persist everything created up to that point
 ```ruby
-p1 = Player.create
-p2 = Player.create
-p2.save
+p1 = Person.create
+p1.name = "John"
+p2 = Person.create
+Courier::Courier.instance.save
 ```
 
-Saves p1 and p2. So I like to use the Courier::Courier.instance.save method
-instead. Even though it's longer, it's more clear what's happening.
-
-.delete() is similar to create. It will delete the model in the current app run,
-but it will be persisted in the following app run, unless you also call .save()
-afterwards.
+.delete() is similar to create in that it will delete the model in the context of the current app run,
+but the deletion won't be persisted in successive app runs, unless you also call .save() is called on the courier instance after .delete() is called on the object. (.delete!() exists and is different from .delete(); don't ever call .delete!() on an object created with .create())
 
 --
 ###Loading from Core Data
-Calling .all on a model will return an array of all the saved models. eg
+.all on a subclass of Courier::Base will return an array of all the created models. eg
 
 ```ruby
 Player.all # => [<Player1>, <Player2>, etc]
 ```
 
-If you have relationships like a team having many players, you can also do
-things like:
+To set relationships, you can do
 
 ```ruby
 team = Team.create
@@ -186,9 +161,7 @@ some_player.team = team               # or
 team.players # => [those 2 players]   # both work exactly the same
 ```
 
-Remember to call save to persist those models/relationships. The same applies to
-has_many:through: relationships. Similarly, if a team has_many players through
-team players, you can do
+If a league has many teams, and a team has many players, define a league has many players through teams as shown in the first README.md model, to get this shortcut
 
 ```ruby
 league.players
@@ -219,8 +192,11 @@ here](https://developer.apple.com/library/mac/documentation/cocoa/conceptual/pre
 is provisioned for by [the Courier::Scope module](https://github.com/pachun/Courier/blob/master/app/courier/scope.rb).
 Some of the string comparisons like LIKE to find a string that contains another
 string can be tricky to use with those "x >= y" string format of comparison
-above. If you need to be really specific you can use Courier::Scope.where(:name,
-contains: "r. Mc") (for example) to search for names that have either Dr. Mc or
+above. If you need to be really specific you can use
+```ruby
+scope :males_and_doctors_whos_names_start_with_mc, Courier::Scope.where(:name, contains: "r. Mc")
+```
+(for example) to search for names that have either Dr. Mc or
 Mr. Mc. A list of those and examples on how to use each of them is also in the
 courier_scope_spec.rb file.
 
@@ -236,48 +212,94 @@ team.players.where(seasoned_scope) # => [player1, player2, etc]
 
 --
 ###JSON Resources
-Set the base url on courier's instance, and the resource path on the model:
 
 ```ruby
 class Team < Courier::Base
+  property :id, Integer32, key: true
+  property :name, String
+  property :location, String
+  
   self.json_to_local = {:ID => :id, :TeamName => :name, :TeamTown => :location}
   self.collection_url = "teams/"
   self.individual_url = "teams/:id"
 end
 
 Courier::Courier.instance.url = "http://hello.world.me"
+Courier::Courier.instance.parcels = [Team]
 ```
 
-You can then do:
-
+Fetching single resources
 ```ruby
 team = Team.new
 team.id = 5
-team.fetch do
-  # executed after the http request has completed
+team.fetch do |foreign_team| # asyncly called after http get
+  foreign_team.merge_if do
+    # return true in this block to overwrite the local team with id 5 with the fetched team
+  end
+  
+  # if you want to just save a certain attribute of the fetched resource, do:
+  team.name = foreign_team.name
   team.save
+
+  foreign_team.delete! # always do this after you're done with a fetched resource
 end
+
+team.fetch! {} # foreign team w/ id=5 auto overwrites local w/ id=5, then your block executes
 ```
 
-To get all teams, you can do
-
+Fetching a collection of resources
 ```ruby
-Team.fetch_all do
-  Courier::Courier.instance.save
+Team.fetch do |conflicts|
+  # conflicts will be an array, in this format:
+  #
+  # [
+  #   {
+  #     local: <TeamInstance0x123>,
+  #     foreign: <TeamInstance0x456>,
+  #   },
+  #   {
+  #     local: <TeamInstance0x789>,
+  #     foreign: <TeamInstance0x012>,
+  #   },
+  #   {
+  #     local: <TeamInstance0x345>,
+  #     foreign: <TeamInstance0x678>,
+  #   }
+  # ]
+  #
+  # resolve the conflicts one at a time the same way you would with single resources
+
+  conflicts.each do |conflict|
+    conflict[:foreign].merge_if do
+      # true or false
+    end
+    conflict[:foreign].delete!
+  end
+
+  # or you could do
+
+  conflicts.each do |conflict|
+    conflict[:foreign].merge!
+    conflict[:foreign].delete!
+  end
 end
 ```
 
-
+Pushing single resources back up to the server
+```ruby
+  team.push do |result|
+    if result.success?
+      # worked
+    else
+      # uh oh
+      puts "#{result.operation.response.statusCode.to_s}"
+    end
+  end
+```
 
 --
 ###To Do
 
-* Remove need for .save call, by creating an independent context for each object and then merging it into the main context when it's required fields are all satisfied.
-
-* Every time a core data object is .create'd or one of its properties are modified, return true if the new context could merge back into the main context, or a string with an error message if not.
-
-* Replace Bubble-Wrap/http with AFMotion
-
-* Some kind of auto-resolution for fetching a bunch of object from a json endpoint, when they already exist locally. Should have a field designated as :key or something to facilitate this.
+* Remove need for .save call.
 
 * [lightweight](https://developer.apple.com/library/ios/documentation/cocoa/conceptual/CoreDataVersioning/Articles/vmLightweightMigration.html) command line migrations.
