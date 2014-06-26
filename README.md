@@ -8,13 +8,14 @@ A Rubymotion wrapper for syncing JSON resources to Core Data.
 Gemfile
 
 ```ruby
-gem 'motion-courier', '~>0.0.5', git: 'https://github.com/pachun/Courier'
+gem 'motion-support'
+gem 'motion-courier', '~>0.1.0', git: 'https://github.com/pachun/Courier'
 ```
 
 Rakefile
 
 ```ruby
-require 'motion-support/inflector'
+require 'motion-support'
 ```
 
 I'm having trouble automating that on gem inclusion. If anyone knows how, please
