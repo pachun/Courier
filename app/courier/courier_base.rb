@@ -211,7 +211,7 @@ module Courier
     def self.fetch(&block)
       AFMotion::HTTP.get(collection_url) do |result|
         if result.success?
-          _compare_local_collection_to_fetched_collection(result.body, &block)
+          _compare_local_collection_to_fetched_collection(result.object, &block)
         else
           puts "error while fetched collection of #{self.to_s.pluralize}: #{result.error.localizedDescription}"
         end
@@ -281,15 +281,13 @@ module Courier
 
     def merge!
       counterpart = main_context_match
-      if counterpart != nil
-        true_class.properties.each do |p|
-          counterpart.send("#{p.name}=", send("#{p.name}"))
-        end
-        delete!
-        true
-      else
-        false
+      deleting_existing_resource = !counterpart.nil?
+      counterpart ||= true_class.create
+      true_class.properties.each do |p|
+        counterpart.send("#{p.name}=", send("#{p.name}"))
       end
+      delete!
+      deleting_existing_resource
     end
 
     def merge_if(&block)
