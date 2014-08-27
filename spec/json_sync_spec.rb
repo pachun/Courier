@@ -91,7 +91,7 @@ describe "The Courier Base Class' JSON resource syncing functionality" do
     end
   end
 
-  it "provides .merge! for force merging an object into the main context (and deleting the old context)" do
+  it "provides .merge! which will overwrite the corresponding resource if it exists" do
     prior_num_contexts = @c.contexts.count
     @post._save_single_resource_in_new_context(@post_json) do |fetched_resource|
       fetched_resource.merge!.should == true
@@ -100,7 +100,10 @@ describe "The Courier Base Class' JSON resource syncing functionality" do
       @post.body.should == @post_json["body"]
       prior_num_contexts.should == @c.contexts.count.should
     end
+  end
 
+
+  it "provides .merge! which will create a new resource if one doesn't already exist" do
     another_post = Post.create
     another_post.id = 10
     prior_num_contexts = @c.contexts.count
@@ -110,7 +113,7 @@ describe "The Courier Base Class' JSON resource syncing functionality" do
       another_post.title.should == nil
       another_post.user_id.should == nil
       another_post.body.should == nil
-      (prior_num_contexts + 1).should == @c.contexts.count
+      prior_num_contexts.should == @c.contexts.count
     end
   end
 
