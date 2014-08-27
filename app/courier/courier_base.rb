@@ -213,7 +213,7 @@ module Courier
         if result.success?
           _compare_local_collection_to_fetched_collection(results.body, &block)
         else
-          puts "error while fetched collection of #{self.to_s.pluralize}: #{results.error.localizedDescription}"
+          puts "error while fetched collection of #{self.to_s.pluralize}: #{result.error.localizedDescription}"
         end
       end
     end
