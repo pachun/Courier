@@ -209,7 +209,7 @@ module Courier
     # group resource fetch
 
     def self.fetch(&block)
-      AFMotion::HTTP.get(collection) do |result|
+      AFMotion::HTTP.get(collection_url) do |result|
         if result.success?
           _compare_local_collection_to_fetched_collection(results.body, &block)
         else
