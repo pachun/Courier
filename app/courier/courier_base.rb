@@ -211,7 +211,7 @@ module Courier
     def self.fetch(&block)
       AFMotion::HTTP.get(collection_url) do |result|
         if result.success?
-          _compare_local_collection_to_fetched_collection(results.body, &block)
+          _compare_local_collection_to_fetched_collection(result.body, &block)
         else
           puts "error while fetched collection of #{self.to_s.pluralize}: #{result.error.localizedDescription}"
         end
