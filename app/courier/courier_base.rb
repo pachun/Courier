@@ -22,12 +22,12 @@ module Courier
 
     def self.property(*property)
       check_for_key_in(property)
-      properties << coredata_property_from(property)
+      properties << CoreData::PropertyDefinition.from(property)
     end
 
     def self.check_for_key_in(property)
       @keys ||= []
-      if property[2] && property[2][:key]
+      if property[2].class == {}.class && property[2].has_key?(:key)
         @keys << property[0]
       end
     end
@@ -39,10 +39,11 @@ module Courier
     # "constantization" and hemming of inverse relationships will
     # happen just before a store_coordinator is generated from the
     # schema (in courier.rb)
-    def self.belongs_to(owner_class, as:name, on_delete:delete_action)
+    def self.belongs_to(owner_class, as:name, on_delete:deletion_rule)
       belongs_to = {min:0, max:1}
       owner_class = owner_class.to_s.capitalize
-      relationships << coredata_relationship_from(belongs_to, owner_class, name, delete_action)
+      owned_class = self.to_s
+      relationships << CoreData::RelationshipDefinition.from(belongs_to, owned_class, owner_class, name, deletion_rule)
     end
 
     # this doesnt add an actial relationship; just dynamically
@@ -57,7 +58,7 @@ module Courier
       end
     end
 
-    def self.has_many(owned_class, as:name, on_delete:delete_action)
+    def self.has_many(owned_class_plural_symbol, as:name, on_delete:deletion_rule)
 
       # if a keyboard has many keys, this provides keyboard.keys to return an array
       # of all the keys
@@ -80,31 +81,22 @@ module Courier
         x.send("#{owner_instance.true_class.to_s.downcase}=", owner_instance)
       end
 
+      owned_class_string = owned_class_plural_symbol.to_s.singularize.capitalize
+
+      class_constant = self
+      define_method("fetch_#{name}") do |&block|
+        puts "self is #{self.inspect}"
+        owned_class = owned_class_string.constantize
+        nested_collection_path = self.individual_url + "/" + owned_class.collection_path
+        puts "nested collection path: #{nested_collection_path}"
+        owned_class.fetch_location(nested_collection_path, &block)
+      end
+
       has_many = {min:0, max:0}
-      owned_class = owned_class.to_s.singularize.capitalize
-      relationships << coredata_relationship_from(has_many, owned_class, "#{name}__", delete_action)
-    end
-
-    def self.coredata_relationship_from(type, related_class, name, delete_action)
-      CoreData::RelationshipDefinition.new.tap do |r|
-        r.name = name.to_s
-        r.local_model = self.to_s
-        r.destination_model = related_class
-        r.min_count = type[:min]
-        r.max_count = type[:max]
-        r.delete_rule = CoreData::DeleteRule::from_symbol(delete_action)
-      end
-    end
-
-    def self.coredata_property_from(property)
-      CoreData::PropertyDefinition.new.tap do |p|
-        p.name = property[0]
-        p.type = ("CoreData::PropertyTypes::" + property[1].to_s).constantize
-        if property[2]
-          p.optional = false || (!property[2][:required])
-          p.default_value = nil || property[2][:default]
-        end
-      end
+      owner_class_string = self.to_s
+      puts "owned_class_string = #{owned_class_string}"
+      puts "owner_class_string = #{owner_class_string}"
+      relationships << CoreData::RelationshipDefinition.from(has_many, owner_class_string, owned_class_string, "#{name}__", deletion_rule)
     end
 
     def self.create
@@ -179,37 +171,41 @@ module Courier
     # reading json resources...
     #
 
-    @@individual_path = ""
-    @@collection_path = ""
-    @@json_to_local = ""
+    @individual_path = ""
+    @collection_path = ""
+    @json_to_local = ""
     def self.individual_path=(path)
-      @@individual_path = path
+      @individual_path = path
     end
 
     def self.collection_path=(path)
-      @@collection_path = path
+      @collection_path = path
     end
 
     def self.json_to_local=(mapping)
-      @@json_to_local = mapping
+      @json_to_local = mapping
     end
 
     def self.individual_path
-      @@individual_path
+      @individual_path
     end
 
     def self.collection_path
-      @@collection_path
+      @collection_path
     end
 
     def self.json_to_local
-      @@json_to_local
+      @json_to_local
     end
 
     # group resource fetch
 
     def self.fetch(&block)
-      AFMotion::HTTP.get(collection_url) do |result|
+      fetch_location(collection_path, &block)
+    end
+
+    def self.fetch_location(location, &block)
+      AFMotion::HTTP.get(location) do |result|
         if result.success?
           _compare_local_collection_to_fetched_collection(result.object, &block)
         else
