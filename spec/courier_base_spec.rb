@@ -31,6 +31,8 @@ describe "The Courier Base Class" do
     class Key < Courier::Base
       belongs_to :keyboard, as: :keyboard, on_delete: :nullify
       has_many :markings, as: :markings, on_delete: :cascade
+
+      self.collection_path = "keys"
     end
 
     class Marking < Courier::Base
@@ -230,5 +232,11 @@ describe "The Courier Base Class" do
     kb1 = Keyboard.create
     kb2 = Keyboard.create_in_new_context
     kb1.context.should != kb2.context
+  end
+
+  it "defines .keys_url method on keyboard instances which returns an endpoint for fetch all keys owned by that keyboard" do
+    kb = Keyboard.create
+    kb.brand = "apple"
+    kb.keys_url.should == "http://xyz.com/keyboards/apple/keys"
   end
 end

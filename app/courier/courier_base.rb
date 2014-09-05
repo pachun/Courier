@@ -83,10 +83,16 @@ module Courier
 
       owned_class_string = owned_class_plural_symbol.to_s.singularize.capitalize
 
+      # e.g. defines .posts_path on User instances if User has_many :posts
+      define_method("#{owned_class_plural_symbol}_url") do
+        owned_class = owned_class_string.constantize
+        self.individual_url + "/" + owned_class.collection_path
+      end
+
       class_constant = self
       define_method("fetch_#{name}") do |&block|
         owned_class = owned_class_string.constantize
-        nested_collection_path = self.individual_url + "/" + owned_class.collection_path
+        nested_collection_path = self.send("#{owned_class_pural_symbol}_url")
         owned_class.fetch_location(nested_collection_path, &block)
       end
 
