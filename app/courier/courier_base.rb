@@ -85,17 +85,13 @@ module Courier
 
       class_constant = self
       define_method("fetch_#{name}") do |&block|
-        puts "self is #{self.inspect}"
         owned_class = owned_class_string.constantize
         nested_collection_path = self.individual_url + "/" + owned_class.collection_path
-        puts "nested collection path: #{nested_collection_path}"
         owned_class.fetch_location(nested_collection_path, &block)
       end
 
       has_many = {min:0, max:0}
       owner_class_string = self.to_s
-      puts "owned_class_string = #{owned_class_string}"
-      puts "owner_class_string = #{owner_class_string}"
       relationships << CoreData::RelationshipDefinition.from(has_many, owner_class_string, owned_class_string, "#{name}__", deletion_rule)
     end
 
@@ -201,7 +197,7 @@ module Courier
     # group resource fetch
 
     def self.fetch(&block)
-      fetch_location(collection_path, &block)
+      fetch_location(collection_url, &block)
     end
 
     def self.fetch_location(location, &block)
