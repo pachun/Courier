@@ -31,5 +31,16 @@ module CoreData
         min_count == other_relationship.min_count &&
         max_count == other_relationship.max_count
     end
+
+    def self.from(type, local_class, related_class, relation_name, deletion_rule)
+      self.new.tap do |r|
+        r.name = relation_name.to_s
+        r.local_model = local_class
+        r.destination_model = related_class
+        r.min_count = type[:min]
+        r.max_count = type[:max]
+        r.delete_rule = DeleteRule::from_symbol(deletion_rule)
+      end
+    end
   end
 end

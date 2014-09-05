@@ -42,8 +42,8 @@ class Team < Courier::Base
   property :location, String
 
   self.json_to_local = {:ID => :id, :TeamName => :name, :TeamTown => :location}
-  self.collection_url = "teams/"
-  self.individual_url = "teams/:id"
+  self.collection_path = "teams/"
+  self.individual_path = "teams/:id"
 end
 
 class Player < Courier::Base
@@ -72,11 +72,6 @@ class AppDelegate
   end
 end
 ```
-You can also get a string description of the schema with .schema
-```ruby
-puts "#{Courier::Courier.instance.schema}"
-```
-![schema](http://i.imgur.com/77G9QGR.png)
 
 --
 ###Tests
@@ -216,17 +211,24 @@ team.players.where(seasoned_scope) # => [player1, player2, etc]
 
 ```ruby
 class Team < Courier::Base
+  has_many :players, as: players, on_delete: :nullify
   property :id, Integer32, key: true
   property :name, String
   property :location, String
   
   self.json_to_local = {:ID => :id, :TeamName => :name, :TeamTown => :location}
-  self.collection_url = "teams/"
-  self.individual_url = "teams/:id"
+  self.collection_path = "teams/"
+  self.individual_path = "teams/:id"
+end
+
+class Player < Courier::Base
+  belongs_to :team, as: :team, on_delete: :nullify
+  property :id, Integer32, key: true
+  property :name, String
 end
 
 Courier::Courier.instance.url = "http://hello.world.me"
-Courier::Courier.instance.parcels = [Team]
+Courier::Courier.instance.parcels = [Team, Player]
 ```
 
 Fetching single resources
@@ -237,12 +239,11 @@ team.fetch do |foreign_team| # asyncly called after http get
   foreign_team.merge_if do
     # return true in this block to overwrite the local team with id 5 with the fetched team
   end
-  
-  # if you want to just save a certain attribute of the fetched resource, do:
+
+  # if you want to just save a certain attribute of the fetched resource, then do this instead:
   team.name = foreign_team.name
   team.save
-
-  foreign_team.delete! # always do this after you're done with a fetched resource
+  foreign_team.delete! # if you don't use .merge!, or .merge_if(&block), then delete! the foreign resource (or you'll get memory leaks)
 end
 
 team.fetch! {} # foreign team w/ id=5 auto overwrites local w/ id=5, then your block executes
@@ -274,15 +275,47 @@ Team.fetch do |conflicts|
     conflict[:foreign].merge_if do
       # true or false
     end
-    conflict[:foreign].delete!
   end
 
   # or you could do
 
   conflicts.each do |conflict|
     conflict[:foreign].merge!
-    conflict[:foreign].delete!
   end
+end
+```
+
+Fetching has_many related resources:
+```ruby
+# getting all the players on a team
+team = Team.create
+team.id = 1
+team.fetch_players do |conflicts| # endpoint inferred to be /teams/1/players
+  # conflicts will be an array of players this time:
+  #
+  # [
+  #   {
+  #     local: <TeamInstance0x123>,
+  #     foreign: <TeamInstance0x456>,
+  #   },
+  #   {
+  #     local: <TeamInstance0x789>,
+  #     foreign: <TeamInstance0x012>,
+  #   },
+  #   {
+  #     local: <TeamInstance0x345>,
+  #     foreign: <TeamInstance0x678>,
+  #   }
+  # ]
+end
+```
+
+Fetching belongs_to related resources:
+```ruby
+team = Team.create
+team.id = some_player.team_id
+team.fetch do |foreign_team|
+  # merge as you would (remembering to .delete! if necessary!)
 end
 ```
 

@@ -12,5 +12,16 @@ module CoreData
     def same_as?(other_property)
       name == other_property.name && type == other_property.type
     end
+
+    def self.from(property_array)
+      self.new.tap do |p|
+        p.name = property_array[0]
+        p.type = ("CoreData::PropertyTypes::" + property_array[1].to_s).constantize
+        if property_array[2].class == {}.class
+          p.optional = false || (!property_array[2].has_key?(:required))
+          p.default_value = nil || property_array[2][:default]
+        end
+      end
+    end
   end
 end

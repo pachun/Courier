@@ -1,7 +1,6 @@
 describe "The Courier Base Class" do
-  behaves_like "A Core Data Spec"
-
   before do
+    Courier::nuke.everything.right.now
     if Object.constants.include?(:Keyboard)
       Object.send(:remove_const, :Keyboard)
     end

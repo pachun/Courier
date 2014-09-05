@@ -24,12 +24,21 @@ describe "The Courier Base Class' JSON resource syncing functionality" do
       self.json_to_local = {id: :id, userId: :user_id, title: :title, body: :body}
     end
 
+    class User < Courier::Base
+      self.collection_path = "users"
+    end
+
     @c = Courier::Courier.instance
     @c.url = "http://jsonplaceholder.typicode.com"
     @c.parcels = [Post]
 
     @post = Post.create
     @post.id = 4
+  end
+
+  it "Doesn't overwrite the path/to_json class vars when a second Courier::Base subclass is defined" do
+    Post.collection_path.should == "posts"
+    User.collection_path.should == "users"
   end
 
   it "saves the individual resource path, collection resource path, and json key mapping to the base object's class" do
