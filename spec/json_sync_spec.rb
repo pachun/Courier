@@ -2,6 +2,10 @@ describe "The Courier Base Class' JSON resource syncing functionality" do
 
   before do
     Courier::nuke.everything.right.now
+
+    if Object.constants.include?(:User)
+      Object.send(:remove_const, :User)
+    end
     if Object.constants.include?(:Post)
       Object.send(:remove_const, :Post)
     end
@@ -14,6 +18,8 @@ describe "The Courier Base Class' JSON resource syncing functionality" do
     }
 
     class Post < Courier::Base
+      belongs_to :user, as: :user, on_delete: :nullify, inverse_name: :posts
+
       property :id, Integer32, key: true
       property :user_id, Integer32
       property :title, String
@@ -25,12 +31,17 @@ describe "The Courier Base Class' JSON resource syncing functionality" do
     end
 
     class User < Courier::Base
+      has_many :posts, as: :posts, on_delete: :cascade, inverse_name: :user
+
+      property :id, Integer32, key: true
       self.collection_path = "users"
+      self.individual_path = "users/:id"
+      self.json_to_local = {id: :id}
     end
 
     @c = Courier::Courier.instance
     @c.url = "http://jsonplaceholder.typicode.com"
-    @c.parcels = [Post]
+    @c.parcels = [User, Post]
 
     @post = Post.create
     @post.id = 4
@@ -165,7 +176,8 @@ describe "The Courier Base Class' JSON resource syncing functionality" do
     foreign_post2 = {"id" => 2, "title" => "FP2 Title"}
     foreign_post3 = {"id" => 3, "title" => "FP3 Title"}
     pretend_json = [foreign_post2, foreign_post3]
-    Post._compare_local_collection_to_fetched_collection(pretend_json) do |conflicts|
+    fetch_params = {json: pretend_json}
+    Post._compare_local_collection_to_fetched_collection(fetch_params) do |conflicts|
       conflicts.class.should == [].class
       conflicts.count.should == 2
       conflicts.first[:local].should == local_post2
@@ -175,6 +187,18 @@ describe "The Courier Base Class' JSON resource syncing functionality" do
       conflicts.last[:foreign].id.should == foreign_post3["id"]
       conflicts.last[:foreign].title.should == foreign_post3["title"]
     end
+  end
+
+  it "provides ResourceClassName.fetch_someHasManyRelatedResource for fetching has_many resources" do
+    foreign_post2 = {"id" => 2, "title" => "FP2 Title"}
+    foreign_post3 = {"id" => 3, "title" => "FP3 Title"}
+    pretend_json = [foreign_post2, foreign_post3]
+    user = User.create
+    fetch_params = {json: pretend_json, owner_instance: user, relation_name: "user", related_model_class:Post}
+    User._compare_local_collection_to_fetched_collection(fetch_params) do |conflicts|
+      conflicts.each{ |c| c[:foreign].merge! }
+    end
+    user.posts.count.should == 2
   end
 
   # it translates key: :default to an integer increment that auto assigns 0,1,2,3,4

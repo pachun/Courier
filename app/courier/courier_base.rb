@@ -1,5 +1,7 @@
 module Courier
   class Base < CoreData::Model
+    attr_accessor :merge_relationships
+
     def self.to_coredata
       @coredata_definition ||= CoreData::ModelDefinition.new.tap do |m|
         m.name = self.to_s
@@ -94,20 +96,29 @@ module Courier
         self.individual_url + "/" + owned_class.collection_path
       end
 
-      class_constant = self
       define_method("fetch_#{name}") do |&block|
         owned_class = owned_class_string.constantize
         nested_collection_path = self.send("#{owned_class_pural_symbol}_url")
-        owned_class.fetch_location(nested_collection_path, &block)
+        inverse_relationship_name = relationship.inverse_relationship.name
+        owned_class.fetch_location(
+          endpoint: nested_collection_path,
+          owner_instance: self,
+          relation_name: inverse_relationship_name,
+          related_model_class: relationship.local_model,
+          &block)
       end
     end
 
     def self.create
-      Courier.instance.contexts[:main].create(self.to_s)
+      Courier.instance.contexts[:main].create(self.to_s).tap do |i|
+        i.merge_relationships = []
+      end
     end
 
     def self.create_in_new_context
-      Courier.instance.new_context.create(self.to_s)
+      Courier.instance.new_context.create(self.to_s).tap do |i|
+        i.merge_relationships = []
+      end
     end
 
     def save
@@ -204,29 +215,41 @@ module Courier
     # group resource fetch
 
     def self.fetch(&block)
-      fetch_location(collection_url, &block)
+      fetch_location(endpoint:collection_url, &block)
     end
 
-    def self.fetch_location(location, &block)
-      AFMotion::HTTP.get(location) do |result|
+    def self.fetch_location(fetch_params, &block)
+      AFMotion::HTTP.get(fetch_params[:endpoint]) do |result|
         if result.success?
-          _compare_local_collection_to_fetched_collection(result.object, &block)
+          fetch_params[:json] = result.object
+          _compare_local_collection_to_fetched_collection(fetch_params, &block)
         else
           puts "error while fetched collection of #{self.to_s.pluralize}: #{result.error.localizedDescription}"
         end
       end
     end
 
-    def self._compare_local_collection_to_fetched_collection(json, &block)
-      block.call( curate_conflicts(json) )
+    def self._compare_local_collection_to_fetched_collection(fetch_params, &block)
+      block.call( curate_conflicts(fetch_params) )
     end
 
-    def self.curate_conflicts(json)
-      conflicts = json.map do |foreign_resource_json|
-        foreign_resource = create_in_new_context
+    def self.curate_conflicts(fetch_params)
+      conflicts = fetch_params[:json].map do |foreign_resource_json|
+        if fetch_params.has_key?(:related_model_class)
+          foreign_resource = fetch_params[:related_model_class].send("create_in_new_context")
+        else
+          foreign_resource = create_in_new_context
+        end
+        bind(foreign_resource, to: fetch_params[:owner_instance], as: fetch_params[:relation_name])
         save_json(foreign_resource_json, to: foreign_resource)
         local_resource = foreign_resource.main_context_match
         {local: local_resource, foreign: foreign_resource}
+      end
+    end
+
+    def self.bind(related_resource, to: owner, as: relation_name)
+      unless owner.nil?
+        related_resource.merge_relationships << {relation: "#{relation_name}=", relative: owner}
       end
     end
 
@@ -284,6 +307,9 @@ module Courier
       counterpart ||= true_class.create
       true_class.properties.each do |p|
         counterpart.send("#{p.name}=", send("#{p.name}"))
+      end
+      merge_relationships.each do |r|
+        counterpart.send(r[:relation], r[:relative])
       end
       delete!
       deleting_existing_resource
