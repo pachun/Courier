@@ -60,6 +60,11 @@ describe "A Core Data Relationship Definition" do
     end.should.not.raise(StandardError)
   end
 
+  it "keeps track of the inverse relationship's name as inverse_name" do
+    @relationship.inverse_name = "some_name"
+    @relationship.inverse_name.should == "some_name"
+  end
+
   it "provides a .same_as?(another_relationship) method" do
     another_relationship = CoreData::RelationshipDefinition.new
     @relationship.same_as?(another_relationship).should == true
