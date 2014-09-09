@@ -10,7 +10,10 @@ module Courier
 
     def self.find_inverse_for(r, in:relationships)
       inverse_relation = relationships.select do |i|
-        i.destination_model == r.local_model && i.local_model == r.destination_model
+        i.destination_model == r.local_model &&
+          i.local_model == r.destination_model &&
+          i.inverse_name == r.true_name &&
+          i.true_name = r.inverse_name
       end.first
       set_inverses(r, inverse_relation)
     end

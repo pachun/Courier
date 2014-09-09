@@ -12,7 +12,7 @@ describe "The Courier Base Class" do
     end
 
     class Keyboard < Courier::Base
-      has_many :keys, as: :keys, on_delete: :cascade
+      has_many :keys, as: :keys, on_delete: :cascade, inverse_name: :keyboard
       has_many :keyboard_markings, through: [:keys, :markings]
 
       property :brand, String, required: true, default: "Dell"
@@ -29,14 +29,14 @@ describe "The Courier Base Class" do
     end
 
     class Key < Courier::Base
-      belongs_to :keyboard, as: :keyboard, on_delete: :nullify
-      has_many :markings, as: :markings, on_delete: :cascade
+      belongs_to :keyboard, as: :keyboard, on_delete: :nullify, inverse_name: :keys
+      has_many :markings, as: :markings, on_delete: :cascade, inverse_name: :key
 
       self.collection_path = "keys"
     end
 
     class Marking < Courier::Base
-      belongs_to :key, as: :key, on_delete: :nullify
+      belongs_to :key, as: :key, on_delete: :nullify, inverse_name: :markings
     end
 
     Courier::Courier.instance.parcels = [Keyboard, Key, Marking]
@@ -127,12 +127,12 @@ describe "The Courier Base Class" do
     keyboard.true_class.should == Keyboard
   end
 
-  it "provides keyboard << key to add a key to a keyboard if keyboard has many keys" do
+  it "provides keyboard.add_to_keys(some_key) to add a key to a keyboard if keyboard has many keys" do
     keyboard = Keyboard.create
     key1 = Key.create
     key2 = Key.create
     key1.keyboard = keyboard
-    lambda{ keyboard << key2 }.should.not.raise(StandardError)
+    lambda{ keyboard.add_to_keys(key2) }.should.not.raise(StandardError)
     all_keys = keyboard.keys
     all_keys.class.should == [].class
     all_keys.should.include(key1)
@@ -141,15 +141,15 @@ describe "The Courier Base Class" do
 
   it "provides a .delete that obeys the relationships defined delete rule" do
     apple_keyboard = Keyboard.create
-    apple_keyboard << Key.create
+    apple_keyboard.add_to_keys(Key.create)
     apple_keyboard.keys.last.delete
     apple_keyboard.save
     apple_keyboard.keys.count.should == 0
     lambda{ apple_keyboard.keys }.should.not.raise(StandardError) # nullify works
 
     das_keyboard = Keyboard.create
-    das_keyboard << Key.create
-    das_keyboard << Key.create
+    das_keyboard.add_to_keys(Key.create)
+    das_keyboard.add_to_keys(Key.create)
     das_keyboard.delete
     das_keyboard.save
     Key.all.count.should == 0 # cascade works
@@ -204,24 +204,24 @@ describe "The Courier Base Class" do
     kb1 = Keyboard.create
     key1 = Key.create
     key2 = Key.create
-    kb1 << key1
-    kb1 << key2
+    kb1.add_to_keys(key1)
+    kb1.add_to_keys(key2)
     m1 = Marking.create
     m2 = Marking.create
     m3 = Marking.create
     m4 = Marking.create
-    key1 << m1
-    key2 << m2
-    key2 << m3
-    key2 << m4
+    key1.add_to_markings(m1)
+    key2.add_to_markings(m2)
+    key2.add_to_markings(m3)
+    key2.add_to_markings(m4)
 
     kb2 = Keyboard.create
     key3 = Key.create
     key4 = Key.create
-    kb2 << key3
-    kb2 << key4
+    kb2.add_to_keys(key3)
+    kb2.add_to_keys(key4)
     m5 = Marking.create
-    key3 << m5
+    key3.add_to_markings(m5)
 
     Courier::Courier.instance.contexts[:main].save
     kb1.keyboard_markings.count.should == 4
