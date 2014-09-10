@@ -105,14 +105,13 @@ module Courier
           owner_instance: self,
           relation_name: inverse_relationship_name,
           related_model_class: relationship.local_model,
-          &block)
+          &block
+        )
       end
     end
 
     def self.create
-      Courier.instance.contexts[:main].create(self.to_s).tap do |i|
-        i.merge_relationships = []
-      end
+      Courier.instance.contexts[:main].create(self.to_s)
     end
 
     def self.create_in_new_context
