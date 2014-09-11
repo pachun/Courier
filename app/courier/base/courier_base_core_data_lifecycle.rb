@@ -1,5 +1,7 @@
 module Courier
   class Base < CoreData::Model
+    attr_accessor :merge_relationships
+
     def self.to_coredata
       @coredata_definition ||= CoreData::ModelDefinition.new.tap do |m|
         m.name = self.to_s
@@ -37,12 +39,8 @@ module Courier
       counterpart = main_context_match
       deleting_existing_resource = !counterpart.nil?
       counterpart ||= true_class.create
-      true_class.properties.each do |p|
-        counterpart.send("#{p.name}=", send("#{p.name}"))
-      end
-      merge_relationships.each do |r|
-        counterpart.send(r[:relation], r[:relative])
-      end
+      save_properties(counterpart)
+      apply_main_context_relationships(counterpart)
       delete!
       deleting_existing_resource
     end
@@ -56,21 +54,39 @@ module Courier
     end
 
     def main_context_match
-      primary_keys = true_class.keys
-      search_scopes = []
-      primary_keys.each do |key|
-        local_key_value = send("#{key}")
-        unless local_key_value.nil?
-          search_scopes << Scope.where(key.to_sym, is: local_key_value)
-        end
-      end
-
+      search_scopes = main_context_match_search_scopes
       if search_scopes.count == 0
         nil
       elsif search_scopes.count == 1
         true_class.where(search_scopes[0]).first
       else
         true_class.where(Scope.and(search_scopes)).first
+      end
+    end
+
+    private
+
+    def save_properties(counterpart)
+      true_class.properties.each do |p|
+        counterpart.send("#{p.name}=", send("#{p.name}"))
+      end
+    end
+
+    def apply_main_context_relationships(counterpart)
+      merge_relationships.each do |r|
+        counterpart.send(r[:relation], r[:relative])
+      end
+    end
+
+    def main_context_match_search_scopes
+      primary_keys = true_class.keys
+      [].tap do |search_scopes|
+        primary_keys.each do |key|
+          local_key_value = send("#{key}")
+          unless local_key_value.nil?
+            search_scopes << Scope.where(key.to_sym, is: local_key_value)
+          end
+        end
       end
     end
   end

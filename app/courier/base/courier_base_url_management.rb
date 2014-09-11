@@ -29,15 +29,10 @@ module Courier
     end
 
     def individual_url
-      handle =
-        true_class.individual_path.split("/").map do |peice|
-          if peice[0] == ":"
-            self.send(peice[1..-1].to_sym)
-          else
-            peice
-          end
-        end.join("/")
-        [Courier.instance.url, handle].join("/")
+      handle = true_class.individual_path.split("/").map do |peice|
+                process(peice)
+              end.join("/")
+      Courier.instance.url + "/" + handle
     end
 
     def self.collection_url
@@ -53,6 +48,16 @@ module Courier
           attribute_value = send("#{local_key}")
           params[json_key] = attribute_value unless attribute_value.nil?
         end
+      end
+    end
+
+    private
+
+    def process(peice)
+      if peice[0] == ":"
+        self.send(peice[1..-1].to_sym)
+      else
+        peice
       end
     end
   end

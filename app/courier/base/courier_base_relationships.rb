@@ -29,43 +29,60 @@ module Courier
     end
 
     def self.has_many(owned_class_plural_symbol, as:name, on_delete:deletion_rule, inverse_name:inverse_name)
-      owned_class_string = owned_class_plural_symbol.to_s.singularize.capitalize
+      create_has_many_relation(owned_class_plural_symbol, as:name, on_delete:deletion_rule, inverse_name:inverse_name)
+      define_array_getter(name)
+      define_add_to_owners_collection(name)
+      define_nested_resource_url(owned_class_plural_symbol)
+      define_nested_fetch(name, owned_class_plural_symbol)
+    end
 
-      # set the relationship
+    private
+
+    def self.create_has_many_relation(owned_class_plural_symbol, as:name, on_delete:deletion_rule, inverse_name:inverse_name)
       has_many = {min:0, max:0}
       owner_class_string = self.to_s
+      owned_class_string = owned_class_plural_symbol.to_s.singularize.capitalize
       relationship = CoreData::RelationshipDefinition.from(has_many, owner_class_string, owned_class_string, "#{name}__", deletion_rule, inverse_name)
       relationships << relationship
+    end
 
-      # if a keyboard has many keys, this provides keyboard.keys to return an array
-      # of all the keys
+    # if a keyboard has many keys, this provides keyboard.keys to return an array
+    # of all the keys
+    def self.define_array_getter(name)
       define_method("#{name}") do
         frozen_array = self.send("#{name}__").allObjects
         frozen_array.map{ |f| f }
       end
+    end
 
-      # in the same context, this provides an alternative to setting a relationship from
-      # the owned side; eg we can do
-      #
-      # keyboard << key
-      #
-      # instead of
-      #
-      # key.keyboard = keyboard
-      #
+    # this provides an alternative to setting a relationship from
+    # the owned side; eg we can do
+    #
+    # keyboard.add_to_keys(key)
+    #
+    # instead of
+    #
+    # key.keyboard = keyboard
+    #
+    def self.define_add_to_owners_collection(name)
+      relationship = relationships.last
       define_method("add_to_#{name}") do |x|
         owner_instance = self
         x.send("#{relationship.inverse_relationship.name}=", owner_instance)
       end
+    end
 
-      # e.g. defines .posts_path on User instances if User has_many :posts
+    # e.g. defines .posts_url on User instances if User has_many :posts
+    def self.define_nested_resource_url(owned_class_plural_symbol)
       define_method("#{owned_class_plural_symbol}_url") do
-        owned_class = owned_class_string.constantize
+        owned_class = owned_class_plural_symbol.to_s.singularize.capitalize.constantize
         self.individual_url + "/" + owned_class.collection_path
       end
+    end
 
+    def self.define_nested_fetch(name, owned_class_plural_symbol)
       define_method("fetch_#{name}") do |&block|
-        owned_class = owned_class_string.constantize
+        owned_class= owned_class_plural_symbol.to_s.singularize.capitalize.constantize
         nested_collection_path = self.send("#{owned_class_pural_symbol}_url")
         inverse_relationship_name = relationship.inverse_relationship.name
         owned_class.fetch_location(
