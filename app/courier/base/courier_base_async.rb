@@ -22,11 +22,14 @@ module Courier
 
     def self.curate_conflicts(fetch_params)
       conflicts = fetch_params[:json].map do |foreign_resource_json|
-        if fetch_params.has_key?(:related_model_class)
-          foreign_resource = fetch_params[:related_model_class].send("create_in_new_context")
-        else
+        # if fetch_params.has_key?(:related_model_class)
+        #   puts "creating related model in new context"
+        #   foreign_resource = fetch_params[:related_model_class].constantize.send("create_in_new_context")
+        # else
+        #   puts "creating same model in new context"
           foreign_resource = create_in_new_context
-        end
+        # end
+        puts "foreign resource is: #{foreign_resource.inspect}"
         bind(foreign_resource, to: fetch_params[:owner_instance], as: fetch_params[:relation_name])
         save_json(foreign_resource_json, to: foreign_resource)
         local_resource = foreign_resource.main_context_match

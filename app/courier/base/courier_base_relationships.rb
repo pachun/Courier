@@ -81,9 +81,10 @@ module Courier
     end
 
     def self.define_nested_fetch(name, owned_class_plural_symbol)
+      relationship = relationships.last
       define_method("fetch_#{name}") do |&block|
-        owned_class= owned_class_plural_symbol.to_s.singularize.capitalize.constantize
-        nested_collection_path = self.send("#{owned_class_pural_symbol}_url")
+        owned_class = owned_class_plural_symbol.to_s.singularize.capitalize.constantize
+        nested_collection_path = self.send("#{owned_class_plural_symbol}_url")
         inverse_relationship_name = relationship.inverse_relationship.name
         owned_class.fetch_location(
           endpoint: nested_collection_path,
