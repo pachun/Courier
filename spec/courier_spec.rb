@@ -45,6 +45,11 @@ describe "The Courier Class" do
     @courier.contexts.count.should == 3
   end
 
+  it "creates a shared AFMotion client when .url is set" do
+    @courier.url = "http://pachulski.me"
+    AFMotion::Client.shared.should.be.an.instance_of(AFHTTPRequestOperationManager)
+  end
+
   # it "deletes all the /documents on .nuke.everything.right.now" do
   #   file_manager = NSFileManager.defaultManager
   #   app_documents_path = file_manager.URLsForDirectory(NSDocumentDirectory, inDomains:NSUserDomainMask).last

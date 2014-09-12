@@ -7,6 +7,14 @@ module Courier
     attr_reader :migrator
     attr_accessor :url
 
+    def url=(url)
+      @url = url
+      AFMotion::Client.build_shared(url) do
+        header "Accept", "application/json"
+        response_serializer :json
+      end
+    end
+
     def self.instance
       @@instance ||= new
     end

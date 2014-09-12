@@ -6,7 +6,7 @@ module Courier
     end
 
     def self.fetch_location(fetch_params, &block)
-      AFMotion::HTTP.get(fetch_params[:endpoint]) do |result|
+      AFMotion::Client.shared.get(fetch_params[:endpoint]) do |result|
         if result.success?
           fetch_params[:json] = result.object
           _compare_local_collection_to_fetched_collection(fetch_params, &block)
@@ -41,7 +41,7 @@ module Courier
     end
 
     def fetch(&block)
-      AFMotion::HTTP.get(individual_url) do |result|
+      AFMotion::Client.shared.get(individual_url) do |result|
         if result.success?
           _save_single_resource_in_new_context(result.object, &block)
         else
@@ -64,7 +64,7 @@ module Courier
     end
 
     def push(&block)
-      AFMotion::JSON.post(individual_url, post_parameters) do |result|
+      AFMotion::Client.shared.post(individual_url, post_parameters) do |result|
         block.call(result)
       end
     end
