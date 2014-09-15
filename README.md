@@ -3,6 +3,8 @@
 
 A Rubymotion wrapper for syncing JSON resources to Core Data.
 
+[Check out the example app](https://github.com/pachun/ExampleCourierApp)
+
 --
 ###Setup
 Gemfile
@@ -10,7 +12,7 @@ Gemfile
 ```ruby
 gem 'motion-support', require: false
 gem 'afmotion', '~> 2.0.0'
-gem 'motion-courier', '~>0.1.9', git: 'https://github.com/pachun/Courier'
+gem 'motion-courier', '~>0.2.6', git: 'https://github.com/pachun/Courier'
 ```
 
 Rakefile
@@ -152,7 +154,7 @@ To set relationships, you can do
 ```ruby
 team = Team.create
 some_player = Player.create
-team.players << Player.create         # either
+team.add_to_players(Player.create)    # either
 some_player.team = team               # or
 team.players # => [those 2 players]   # both work exactly the same
 ```
