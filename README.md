@@ -6,6 +6,8 @@ A Rubymotion wrapper for syncing JSON resources to Core Data.
 
 [Check out the example app](https://github.com/pachun/ExampleCourierApp)
 
+[Also, a short blog post](http://pachun.roon.io/courier)
+
 [![Code Climate](https://codeclimate.com/github/pachun/Courier/badges/gpa.svg)](https://codeclimate.com/github/pachun/Courier)
 
 --
