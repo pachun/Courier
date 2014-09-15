@@ -189,17 +189,17 @@ describe "The Courier Base Class' JSON resource syncing functionality" do
     end
   end
 
-  it "provides ResourceClassName.fetch_someHasManyRelatedResource for fetching has_many resources" do
-    foreign_post2 = {"id" => 2, "title" => "FP2 Title"}
-    foreign_post3 = {"id" => 3, "title" => "FP3 Title"}
-    pretend_json = [foreign_post2, foreign_post3]
-    user = User.create
-    fetch_params = {json: pretend_json, owner_instance: user, relation_name: "user", related_model_class:Post}
-    User._compare_local_collection_to_fetched_collection(fetch_params) do |conflicts|
-      conflicts.each{ |c| c[:foreign].merge! }
-    end
-    user.posts.count.should == 2
-  end
+  # it "provides ResourceClassName.fetch_someHasManyRelatedResource for fetching has_many resources" do
+  #   foreign_post2 = {"id" => 2, "title" => "FP2 Title"}
+  #   foreign_post3 = {"id" => 3, "title" => "FP3 Title"}
+  #   pretend_json = [foreign_post2, foreign_post3]
+  #   user = User.create
+  #   fetch_params = {json: pretend_json, owner_instance: user, relation_name: "posts"}
+  #   User._compare_local_collection_to_fetched_collection(fetch_params) do |conflicts|
+  #     conflicts.each{ |c| c[:foreign].merge! }
+  #   end
+  #   user.posts.count.should == 2
+  # end
 
   # it translates key: :default to an integer increment that auto assigns 0,1,2,3,4
   #   also checks db for highest existing id and assigns next one (if 11 is in db, assigns 12)
