@@ -1,9 +1,12 @@
 # Courier
+
 ![courier](http://i.imgur.com/oPRkxzL.png)
 
 A Rubymotion wrapper for syncing JSON resources to Core Data.
 
 [Check out the example app](https://github.com/pachun/ExampleCourierApp)
+
+[![Code Climate](https://codeclimate.com/github/pachun/Courier/badges/gpa.svg)](https://codeclimate.com/github/pachun/Courier)
 
 --
 ###Setup
@@ -29,15 +32,15 @@ send me a pull request or take the time to let me know how - hello@nickpachulski
 
 ```ruby
 class League < Courier::Base
-  has_many :teams, as: :teams, on_delete: :cascade
+  has_many :teams, as: :teams, on_delete: :cascade, inverse_name: :league
   has_many :players, through: [:teams, :players]
 
   attr_accessor :unpersisted_variables_here, :commissioner
 end
 
 class Team < Courier::Base
-  belongs_to :league, as: :league, on_delete: :nullify
-  has_many :players, as: :players, on_delete: :nullify
+  belongs_to :league, as: :league, on_delete: :nullify, inverse_name: :teams
+  has_many :players, as: :players, on_delete: :nullify, inverse_name: :team
 
   property :id, Integer32, required: true, key: true
   property :name, String
@@ -49,7 +52,7 @@ class Team < Courier::Base
 end
 
 class Player < Courier::Base
-  belongs_to :team, as: :team, on_delete: :nullify
+  belongs_to :team, as: :team, on_delete: :nullify, inverse_name: :players
 
   property :id, Integer32, required: true
   property :name, String, required: true, default_value: "Unknown"
@@ -124,9 +127,6 @@ module Fixtures
 end
 ```
 
-You could maybe pass in a flag on the command line to execute the fixture
-method.
-
 --
 ###Create, Save, and Delete
 .create() will create a model instance, but it will not be persisted to
@@ -171,7 +171,7 @@ You saw one earlier in the player model:
 
 ```ruby
 class Player < Courier::Base
-  belongs_to :team, as: :team, on_delete: :nullify
+  belongs_to :team, as: :team, on_delete: :nullify, inverse_name: :players
 
   property :id, Integer32, required: true
   property :name, String, required: true, default_value: "Unknown"
@@ -213,7 +213,7 @@ team.players.where(seasoned_scope) # => [player1, player2, etc]
 
 ```ruby
 class Team < Courier::Base
-  has_many :players, as: players, on_delete: :nullify
+  has_many :players, as: players, on_delete: :nullify, inverse_name: :team
   property :id, Integer32, key: true
   property :name, String
   property :location, String
@@ -224,7 +224,7 @@ class Team < Courier::Base
 end
 
 class Player < Courier::Base
-  belongs_to :team, as: :team, on_delete: :nullify
+  belongs_to :team, as: :team, on_delete: :nullify, inverse_name: :players
   property :id, Integer32, key: true
   property :name, String
 end
