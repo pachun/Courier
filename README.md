@@ -16,8 +16,8 @@ Gemfile
 
 ```ruby
 gem 'motion-support', require: false
-gem 'afmotion', '~> 2.0.0'
-gem 'motion-courier', '~>0.2.7', git: 'https://github.com/pachun/Courier'
+gem 'afmotion', '~> 2.1.4'
+gem 'motion-courier', '~>0.2.8', git: 'https://github.com/pachun/Courier'
 ```
 
 Rakefile
