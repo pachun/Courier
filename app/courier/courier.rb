@@ -9,10 +9,6 @@ module Courier
 
     def url=(url)
       @url = url
-      AFMotion::Client.build_shared(url) do
-        header "Accept", "application/json"
-        response_serializer :json
-      end
     end
 
     def self.instance

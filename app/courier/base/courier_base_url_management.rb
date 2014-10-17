@@ -13,7 +13,9 @@ module Courier
     end
 
     def self.json_to_local=(mapping)
-      @json_to_local = mapping
+      @json_to_local = properties.map(&:name).inject({}){ |h, a| h[a.to_sym] = a.to_sym; h }
+      @json_to_local.delete_if{ |_,v| mapping.has_value?(v) }
+      @json_to_local.merge!(mapping)
     end
 
     def self.individual_path
@@ -28,9 +30,9 @@ module Courier
       @json_to_local
     end
 
-    def individual_url
+    def individual_url(args = {})
       handle = true_class.individual_path.split("/").map do |peice|
-                process(peice)
+                process(peice, args)
               end.join("/")
       Courier.instance.url + "/" + handle
     end
@@ -53,9 +55,16 @@ module Courier
 
     private
 
-    def process(peice)
+    def process(peice, args)
       if peice[0] == ":"
-        self.send(peice[1..-1].to_sym)
+
+        replacable =peice[1..-1].to_sym
+        if args.has_key?(replacable)
+          args[replacable]
+        else
+          self.send(replacable)
+        end
+
       else
         peice
       end

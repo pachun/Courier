@@ -37,6 +37,12 @@ describe "The Courier Base Class" do
 
     class Marking < Courier::Base
       belongs_to :key, as: :key, on_delete: :nullify, inverse_name: :markings
+
+      property :id, Integer32
+      property :first_name, String
+      property :last_name, String
+
+      self.json_to_local = { lastName: :last_name}
     end
 
     Courier::Courier.instance.parcels = [Keyboard, Key, Marking]
@@ -238,5 +244,9 @@ describe "The Courier Base Class" do
     kb = Keyboard.create
     kb.brand = "apple"
     kb.keys_url.should == "http://xyz.com/keyboards/apple/keys"
+  end
+
+  it "automatically sets json_to_local as an identity mapping property_name: property_name unless overridden" do
+    Marking.json_to_local.should == {id: :id, first_name: :first_name, lastName: :last_name}
   end
 end

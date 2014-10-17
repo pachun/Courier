@@ -45,9 +45,11 @@ describe "The Courier Class" do
     @courier.contexts.count.should == 3
   end
 
-  it "creates a shared AFMotion client when .url is set" do
+  it "creates individual AFMotion clients on each resource" do
     @courier.url = "http://pachulski.me"
-    AFMotion::Client.shared.should.be.an.instance_of(AFHTTPRequestOperationManager)
+    Cup.client.class.should == AFHTTPRequestOperationManager
+    Plate.client.class.should == AFHTTPRequestOperationManager
+    Cup.client.should != Plate.client
   end
 
   # it "deletes all the /documents on .nuke.everything.right.now" do

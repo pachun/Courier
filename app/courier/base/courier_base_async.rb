@@ -1,24 +1,45 @@
 module Courier
   class Base < CoreData::Model
 
-    def self.fetch(&block)
+    def self.client
+      url = Courier.instance.url
+      h = headers
+      @client ||= AFMotion::Client.build(url) do
+        h.each{ |k, v| header "#{k}", "#{v}" }
+        response_serializer :json
+      end
+    end
+
+    def self.headers
+      {}
+    end
+
+    def self.find_all(&block)
       fetch_location(endpoint:collection_url, &block)
     end
 
+    # Deprecated vv
+    def self.fetch(&block)
+      fetch_location(endpoint:collection_url, &block)
+    end
+    # Deprecated ^^
+
     def self.fetch_location(fetch_params, &block)
-      AFMotion::Client.shared.get(fetch_params[:endpoint]) do |result|
+      client.get(fetch_params[:endpoint]) do |result|
         if result.success?
           fetch_params[:json] = result.object
-          _compare_local_collection_to_fetched_collection(fetch_params, &block)
+          block.call(response: result, conflicts: curate_conflicts(fetch_params))
         else
-          puts "error while fetched collection of #{self.to_s.pluralize}: #{result.error.localizedDescription}"
+          block.call(response: result)
         end
       end
     end
 
+    # Deprecated vv
     def self._compare_local_collection_to_fetched_collection(fetch_params, &block)
       block.call( curate_conflicts(fetch_params) )
     end
+    # Deprecated ^^
 
     def self.curate_conflicts(fetch_params)
       conflicts = fetch_params[:json].map do |foreign_resource_json|
@@ -36,8 +57,23 @@ module Courier
       end
     end
 
+    def self.find(args = {}, &block)
+      fetched_resource = create_in_new_context
+      individual_url = fetched_resource.individual_url(args)
+      client.get(individual_url) do |result|
+        if result.success?
+          json = result.object
+          save_json(json, to:fetched_resource)
+          block.call(response: result, resource: fetched_resource)
+        else
+          block.call(response: result)
+        end
+      end
+    end
+
+    # DEPRECATED vv
     def fetch(&block)
-      AFMotion::Client.shared.get(individual_url) do |result|
+      self.class.client.get(individual_url) do |result|
         if result.success?
           _save_single_resource_in_new_context(result.object, &block)
         else
@@ -58,6 +94,7 @@ module Courier
         block.call
       end
     end
+    # DEPRECATED ^^
 
     def push(&block)
       AFMotion::Client.shared.post(individual_url, post_parameters) do |result|

@@ -25,6 +25,12 @@ describe "The Courier Base Class' JSON resource syncing functionality" do
       property :title, String
       property :body, String
 
+      def self.headers
+        {
+          "Accept" => "application/json"
+        }
+      end
+
       self.individual_path = "posts/:id"
       self.collection_path = "posts"
       self.json_to_local = {id: :id, userId: :user_id, title: :title, body: :body}
@@ -186,6 +192,13 @@ describe "The Courier Base Class' JSON resource syncing functionality" do
       conflicts.last[:local].should == nil
       conflicts.last[:foreign].id.should == foreign_post3["id"]
       conflicts.last[:foreign].title.should == foreign_post3["title"]
+    end
+  end
+
+  it "sets http headers with def self.headers; header_hash; end" do
+    Post.headers.class.should == {}.class
+    Post.headers.each do |k, v|
+      Post.client.headers[k].should == v
     end
   end
 
