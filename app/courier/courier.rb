@@ -3,6 +3,10 @@ module Courier
   CourierDatabaseName = "courier"
   MigrationLogSaveName = "migrations.log"
 
+  def self.save
+    Courier.instance.save
+  end
+
   class Courier
     attr_reader :migrator
     attr_accessor :url
