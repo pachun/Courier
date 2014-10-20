@@ -25,4 +25,10 @@ class String
       end
     end
   end
+
+  def singularize
+    if self[-1] == "s"
+      self[0..-2]
+    end
+  end
 end
