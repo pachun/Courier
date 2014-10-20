@@ -28,10 +28,18 @@ module Courier
       client.get(fetch_params[:endpoint]) do |result|
         if result.success?
           fetch_params[:json] = result.object
-          block.call(response: result, conflicts: curate_conflicts(fetch_params))
+          conflicts = curate_conflicts(fetch_params)
+          default_merge(conflicts)
+          block.call(response: result, conflicts: conflicts)
         else
           block.call(response: result)
         end
+      end
+    end
+
+    def self.default_merge(conflicts)
+      if @policy == :overwrite_local
+        conflicts.each{ |c| c[:foreign].merge! }
       end
     end
 
