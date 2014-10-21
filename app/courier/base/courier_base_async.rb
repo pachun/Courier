@@ -37,7 +37,7 @@ module Courier
       end
     end
 
-    def self.default_merge(conflicts)
+    def self.default_merge_group(conflicts)
       if @policy == :overwrite_local
         conflicts.each{ |c| c[:foreign].merge! }
       end
@@ -72,10 +72,20 @@ module Courier
         if result.success?
           json = result.object
           save_json(json, to:fetched_resource)
-          block.call(response: result, resource: fetched_resource)
+          resource = default_merge_single(fetched_resource)
+          block.call(response: result, resource: resource)
         else
           block.call(response: result)
         end
+      end
+    end
+
+    def self.default_merge_single(resource)
+      if @policy == :overwrite_local
+        resource.merge!
+        main_context_match
+      else
+        resource
       end
     end
 

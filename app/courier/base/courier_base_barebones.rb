@@ -1,6 +1,6 @@
 module Courier
   class Base < CoreData::Model
-    def self.conflict_policy(policy = :overwrite_local)
+    def self.conflict_policy(policy = :custom)
       @policy = policy
     end
 
