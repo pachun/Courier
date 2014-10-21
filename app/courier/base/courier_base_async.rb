@@ -83,7 +83,7 @@ module Courier
     def self.default_merge_single(resource)
       if @policy == :overwrite_local
         resource.merge!
-        main_context_match
+        resource.main_context_match
       else
         resource
       end
