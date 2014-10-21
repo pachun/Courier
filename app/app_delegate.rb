@@ -1,5 +1,11 @@
+class User < Courier::Base
+  has_many :posts, as: :posts, on_delete: :cascade, inverse_name: :owner
+end
+
 class Post < Courier::Base
   conflict_policy :overwrite_local
+
+  belongs_to(:user, as: :owner, on_delete: :nullify, inverse_name: :posts)
 
   property :id, Integer32, key: true
   property :user_id, Integer32
@@ -14,19 +20,26 @@ class Post < Courier::Base
 
   self.individual_path = "posts/:id"
   self.collection_path = "posts"
-  self.json_to_local = {id: :id, userId: :user_id, title: :title, body: :body}
+  # self.json_to_local = {id: :id, userId: :user_id, title: :title, body: :body}
+end
+
+class IOSLocation < Courier::Base
+  has_many :IOSTickets, as: :tickets, on_delete: :nullify, inverse_name: :location
+end
+class IOSTicket < Courier::Base
+  belongs_to :IOSLocation, as: :location, on_delete: :nullify, inverse_name: :tickets
 end
 
 class AppDelegate
   def application(_, didFinishLaunchingWithOptions:_)
     return true if RUBYMOTION_ENV == "test"
-    # Courier::nuke.everything.right.now
+    Courier::nuke.everything.right.now
 
     @c = Courier::Courier.instance
     @c.url = "http://jsonplaceholder.typicode.com"
-    @c.parcels = [Post]
+    @c.parcels = [IOSLocation, IOSTicket]
 
-    puts "Post.all: #{Post.all}"
+    # puts "Post.all: #{Post.all}"
 
     # Post.find_all do |result|
     #   if result[:response].success?

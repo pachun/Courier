@@ -11,7 +11,7 @@ module Courier
     # schema (in courier.rb)
     def self.belongs_to(owner_class, as:name, on_delete:deletion_rule, inverse_name:inverse_name)
       belongs_to = {min:0, max:1}
-      owner_class = owner_class.to_s.capitalize
+      owner_class = owner_class.to_s.capitalize_first
       owned_class = self.to_s
       relationships << CoreData::RelationshipDefinition.from(belongs_to, owned_class, owner_class, name, deletion_rule, inverse_name)
     end
@@ -41,7 +41,7 @@ module Courier
     def self.create_has_many_relation(owned_class_plural_symbol, as:name, on_delete:deletion_rule, inverse_name:inverse_name)
       has_many = {min:0, max:0}
       owner_class_string = self.to_s
-      owned_class_string = owned_class_plural_symbol.to_s.singularize.capitalize
+      owned_class_string = owned_class_plural_symbol.to_s.singularize.capitalize_first
       relationship = CoreData::RelationshipDefinition.from(has_many, owner_class_string, owned_class_string, "#{name}__", deletion_rule, inverse_name)
       relationships << relationship
     end
@@ -75,7 +75,7 @@ module Courier
     # e.g. defines .posts_url on User instances if User has_many :posts
     def self.define_nested_resource_url(owned_class_plural_symbol)
       define_method("#{owned_class_plural_symbol}_url") do
-        owned_class = owned_class_plural_symbol.to_s.singularize.capitalize.constantize
+        owned_class = owned_class_plural_symbol.to_s.singularize.capitalize_first.constantize
         self.individual_url + "/" + owned_class.collection_path
       end
     end
@@ -83,7 +83,7 @@ module Courier
     def self.define_nested_fetch(name, owned_class_plural_symbol)
       relationship = relationships.last
       define_method("fetch_#{name}") do |&block|
-        owned_class = owned_class_plural_symbol.to_s.singularize.capitalize.constantize
+        owned_class = owned_class_plural_symbol.to_s.singularize.capitalize_first.constantize
         nested_collection_path = self.send("#{owned_class_plural_symbol}_url")
         inverse_relationship_name = relationship.inverse_relationship.name
         owned_class.fetch_location(

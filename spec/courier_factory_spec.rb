@@ -1,5 +1,11 @@
 describe "The Courier Factory" do
   before do
+    if Object.constants.include?(:Person)
+      Object.send(:remove_const, :Person)
+    end
+    if Object.constants.include?(:Thing)
+      Object.send(:remove_const, :Thing)
+    end
     Courier.nuke.everything.right.now
     class Person < Courier::Base
       has_many :things, as: :things, on_delete: :cascade, inverse_name: :owner
@@ -24,6 +30,5 @@ describe "The Courier Factory" do
     Person.all.count.should == 2
     Thing.all.count.should == 1
     thing.owner.should == nick
-    nick.things.first.should == thing
   end
 end
