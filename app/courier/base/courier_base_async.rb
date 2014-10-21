@@ -29,7 +29,7 @@ module Courier
         if result.success?
           fetch_params[:json] = result.object
           conflicts = curate_conflicts(fetch_params)
-          default_merge(conflicts)
+          default_merge_group(conflicts)
           block.call(response: result, conflicts: conflicts)
         else
           block.call(response: result)
