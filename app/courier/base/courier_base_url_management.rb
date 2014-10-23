@@ -13,7 +13,7 @@ module Courier
     end
 
     def self.json_to_local=(mapping)
-      @json_to_local = properties.map(&:name).inject({}){ |h, a| h[a.to_sym] = a.to_sym; h }
+      @json_to_local = default_json_to_local
       @json_to_local.delete_if{ |_,v| mapping.has_value?(v) }
       @json_to_local.merge!(mapping)
     end
@@ -27,7 +27,11 @@ module Courier
     end
 
     def self.json_to_local
-      @json_to_local
+      @json_to_local || default_json_to_local
+    end
+
+    def self.default_json_to_local
+      properties.map(&:name).inject({}){ |h, a| h[a.to_sym] = a.to_sym; h }
     end
 
     def individual_url(args = {})

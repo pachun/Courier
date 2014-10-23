@@ -20,7 +20,7 @@ module Courier
     end
 
     def parcels=(parcels)
-      @parcels = parcels
+      @parcels = parcels.concat([::Cache____])
       build_all
     end
 

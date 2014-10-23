@@ -15,4 +15,5 @@ Motion::Project::App.setup do |app|
 
   app.files_dependencies "app/app_delegate.rb" => "app/courier/base/courier_base_relationships.rb"
   app.files_dependencies "app/courier/base/courier_base_relationships.rb" => "app/courier/base/courier_base_barebones.rb"
+  app.files_dependencies "app/courier/base/courier_base_barebones.rb" => "app/courier/base/courier_base_default_properties.rb"
 end
