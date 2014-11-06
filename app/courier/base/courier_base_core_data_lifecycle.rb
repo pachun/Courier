@@ -36,13 +36,13 @@ module Courier
     end
 
     def merge!
-      counterpart = main_context_match
-      deleting_existing_resource = !counterpart.nil?
-      counterpart ||= true_class.create
-      save_properties(counterpart)
-      apply_main_context_relationships(counterpart)
-      delete!
-      deleting_existing_resource
+      (main_context_match || true_class.create).tap do |main_context_copy|
+        save_properties(main_context_copy)
+        apply_main_context_relationships(main_context_copy)
+        save
+
+        delete!
+      end
     end
 
     def merge_if(&block)

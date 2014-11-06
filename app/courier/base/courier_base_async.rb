@@ -18,12 +18,6 @@ module Courier
       fetch_location(endpoint:collection_url, &block)
     end
 
-    # Deprecated vv
-    def self.fetch(&block)
-      fetch_location(endpoint:collection_url, &block)
-    end
-    # Deprecated ^^
-
     def self.fetch_location(fetch_params, &block)
       client.get(fetch_params[:endpoint]) do |result|
         if result.success?
@@ -88,31 +82,6 @@ module Courier
         resource
       end
     end
-
-    # DEPRECATED vv
-    def fetch(&block)
-      self.class.client.get(individual_url) do |result|
-        if result.success?
-          _save_single_resource_in_new_context(result.object, &block)
-        else
-          puts "error while fetching #{self.class.to_s.downcase} resource: #{result.error.localizedDescription}"
-        end
-      end
-    end
-
-    def _save_single_resource_in_new_context(json, &block)
-      fetched_resource = true_class.create_in_new_context
-      true_class.save_json(json, to:fetched_resource)
-      block.call(fetched_resource)
-    end
-
-    def fetch!(&block)
-      fetch do |foreign_resource|
-        foreign_resource.merge!
-        block.call
-      end
-    end
-    # DEPRECATED ^^
 
     def push(&block)
       AFMotion::Client.shared.post(individual_url, post_parameters) do |result|
