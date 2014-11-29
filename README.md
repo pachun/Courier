@@ -15,7 +15,7 @@ A Rubymotion wrapper for syncing JSON resources to Core Data.
 Gemfile
 
 ```ruby
-gem 'motion-courier', '~>0.2.8', git: 'https://github.com/pachun/Courier'
+gem 'motion-courier', '~>0.5.2', git: 'https://github.com/pachun/Courier'
 ```
 
 --
