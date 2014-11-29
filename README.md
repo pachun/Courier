@@ -226,26 +226,23 @@ Courier::Courier.instance.parcels = [Team, Player]
 
 Fetching single resources
 ```ruby
-team = Team.new
-team.id = 5
-team.fetch do |foreign_team| # asyncly called after http get
-  foreign_team.merge_if do
-    # return true in this block to overwrite the local team with id 5 with the fetched team
+# pass in anything needed to resolve the individual_path set before
+Team.find(id: 5) do |response|
+  if response.success?
+    response.resource # fetched resource
+    response.resource.merge_if { conditional } # do things with it
+  else
+    response.error_message # useful information
   end
-
-  # if you want to just save a certain attribute of the fetched resource, then do this instead:
-  team.name = foreign_team.name
-  team.save
-  foreign_team.delete! # if you don't use .merge!, or .merge_if(&block), then delete! the foreign resource (or you'll get memory leaks)
 end
-
-team.fetch! {} # foreign team w/ id=5 auto overwrites local w/ id=5, then your block executes
 ```
 
 Fetching a collection of resources
 ```ruby
-Team.fetch do |conflicts|
-  # conflicts will be an array, in this format:
+Team.find_all do |response|
+  # response[:response].success? returns true/false ([:response] is the AFMotion response)
+  # response[:error_message] is an error message, if there was a problem
+  # response[:conflicts] will be an array, in this format:
   #
   # [
   #   {
@@ -264,17 +261,18 @@ Team.fetch do |conflicts|
   #
   # resolve the conflicts one at a time the same way you would with single resources
 
-  conflicts.each do |conflict|
+  response[:conflicts].each do |conflict|
     conflict[:foreign].merge_if do
       # true or false
     end
   end
 
-  # or you could do
-
-  conflicts.each do |conflict|
+  # or you could add "conflict_policy :overwrite_local" to the team model to automatically do
+  # what was formerly accomplished with the following:
+  response[:conflicts].each do |conflict|
     conflict[:foreign].merge!
   end
+  # you can still do this, but I think the conflict_policy route is cleaner
 end
 ```
 
@@ -283,32 +281,23 @@ Fetching has_many related resources:
 # getting all the players on a team
 team = Team.create
 team.id = 1
-team.fetch_players do |conflicts| # endpoint inferred to be /teams/1/players
-  # conflicts will be an array of players this time:
+team.find_players do |response| # endpoint inferred to be /teams/1/players (based on collection/individual url settings)
+  # response[:conflicts] will be an array of players this time:
   #
   # [
   #   {
-  #     local: <TeamInstance0x123>,
-  #     foreign: <TeamInstance0x456>,
+  #     local: <PlayerInstance0x123>,
+  #     foreign: <PlayerInstance0x456>,
   #   },
   #   {
-  #     local: <TeamInstance0x789>,
-  #     foreign: <TeamInstance0x012>,
+  #     local: <PlayerInstance0x789>,
+  #     foreign: <PlayerInstance0x012>,
   #   },
   #   {
-  #     local: <TeamInstance0x345>,
-  #     foreign: <TeamInstance0x678>,
+  #     local: <PlayerInstance0x345>,
+  #     foreign: <PlayerInstance0x678>,
   #   }
   # ]
-end
-```
-
-Fetching belongs_to related resources:
-```ruby
-team = Team.create
-team.id = some_player.team_id
-team.fetch do |foreign_team|
-  # merge as you would (remembering to .delete! if necessary!)
 end
 ```
 
